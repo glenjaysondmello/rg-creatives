@@ -79,7 +79,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
             {/* Video Background with Parallax */}
             <div
                 ref={bgRef}
-                className="absolute inset-0 -z-10 scale-110 will-change-transform"
+                className="absolute inset-0 z-0 scale-110 will-change-transform"
             >
                 <video
                     className="w-full h-full object-cover"
@@ -90,7 +90,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                     poster="" // Could add a poster image here ideally
                 >
                     <source
-                        src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-blue-and-pink-light-996-large.mp4"
+                        src="/360Booth_Showreel.mp4"
                         type="video/mp4"
                     />
                 </video>
