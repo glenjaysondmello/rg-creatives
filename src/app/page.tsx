@@ -7,6 +7,7 @@ import { ServiceGallery } from "@/components/features/home/ServiceGallery";
 import { PricingSection } from "@/components/features/home/PricingSection";
 import { PortfolioSection } from "@/components/features/home/PortfolioSection";
 import { TestimonialsSection } from "@/components/features/home/TestimonialsSection";
+import { ImpactSection } from "@/components/features/home/ImpactSection";
 import { ContactForm } from "@/components/features/home/ContactForm";
 import { QuoteOverlay } from "@/components/features/leads/QuoteOverlay";
 import { useState } from "react";
@@ -22,6 +23,7 @@ export default function Home() {
       <ServiceGallery />
       <PricingSection />
       <PortfolioSection />
+      <ImpactSection />
       <TestimonialsSection />
       <ContactForm />
       

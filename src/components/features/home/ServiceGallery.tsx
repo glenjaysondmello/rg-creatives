@@ -64,37 +64,37 @@ const services: Service[] = [
 
 export function ServiceGallery() {
     return (
-        <section className="py-24 bg-black text-white">
-            <div className="container mx-auto px-4">
+        <section id="services" className="py-28 bg-black text-white">
+            <div className="container mx-auto px-6">
                 <motion.div
-                    className="mb-16 flex flex-col md:flex-row justify-between items-end"
+                    className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
                     <div>
-                        <h2 className="text-sm font-semibold text-gray-400 tracking-widest uppercase mb-4">
+                        <p className="text-xs font-semibold text-gray-500 tracking-[0.25em] uppercase mb-4">
                             Our Expertise
-                        </h2>
-                        <h3 className="text-4xl md:text-6xl font-extrabold tracking-tight">
+                        </p>
+                        <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight">
                             PREMIUM EVENT<br/>SERVICES.
-                        </h3>
+                        </h2>
                     </div>
-                    <button className="hidden md:inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white border border-white/20 rounded-full hover:bg-white/10 transition-colors">
-                        View All Services <ArrowUpRight className="ml-2 w-4 h-4" />
+                    <button className="hidden md:inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white border border-white/20 rounded-full hover:bg-white/5 hover:border-white/30 transition-all duration-200 focus-ring">
+                        View All Services <ArrowUpRight className="w-4 h-4" />
                     </button>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {services.map((service, index) => (
                         <ServiceCard key={service.id} service={service} index={index} />
                     ))}
                 </div>
                 
                 <div className="mt-12 text-center md:hidden">
-                    <button className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white border border-white/20 rounded-full hover:bg-white/10 transition-colors">
-                        View All Services <ArrowUpRight className="ml-2 w-4 h-4" />
+                    <button className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 focus-ring">
+                        View All Services <ArrowUpRight className="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -108,13 +108,13 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
     return (
         <motion.div
             className={cn(
-                "group flex flex-col bg-gray-900 border border-white/10 rounded-[2rem] overflow-hidden",
+                "group flex flex-col bg-gray-900 border border-white/10 rounded-[2rem] overflow-hidden hover:border-white/20 hover:shadow-[0_8px_40px_rgba(255,255,255,0.04)] transition-all duration-300",
                 service.className
             )}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
+            transition={{ delay: index * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -151,22 +151,22 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
             </div>
 
             {/* Lower Half: Content */}
-            <div className="p-8 flex flex-col flex-grow justify-between">
+            <div className="p-7 flex flex-col flex-grow justify-between">
                 <div>
-                    <h3 className="text-2xl font-bold leading-tight mb-4">
+                    <h3 className="text-xl font-bold leading-tight mb-3">
                         {service.title}
                     </h3>
-                    <p className="text-gray-400 text-sm line-clamp-2 mb-6">
+                    <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
                         Professional {service.title.toLowerCase()} tailored for your specific event needs and audience engagement.
                     </p>
                 </div>
                 
-                <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                    <button className="text-sm font-semibold tracking-wide text-white hover:text-gray-300 transition-colors uppercase">
+                <div className="flex items-center justify-between pt-5 mt-5 border-t border-white/10">
+                    <button className="text-xs font-bold tracking-[0.15em] text-white hover:text-gray-300 transition-colors uppercase focus-ring">
                         Details
                     </button>
-                    <div className="p-2 bg-white/5 rounded-full hover:bg-white/20 transition-colors cursor-pointer">
-                        <ArrowUpRight className="w-5 h-5 text-white" />
+                    <div className="p-2.5 bg-white/5 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200 cursor-pointer">
+                        <ArrowUpRight className="w-4 h-4 text-white" />
                     </div>
                 </div>
             </div>
