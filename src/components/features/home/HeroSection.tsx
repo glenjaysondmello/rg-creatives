@@ -6,188 +6,199 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, Play } from "lucide-react";
+import Link from "next/link";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger);
 }
 
-export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const bgRef = useRef<HTMLDivElement>(null);
+export function HeroSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
 
-    useGSAP(
-        () => {
-            if (bgRef.current) {
-                gsap.to(bgRef.current, {
-                    yPercent: 20,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: "top top",
-                        end: "bottom top",
-                        scrub: true,
-                    },
-                });
-            }
-        },
-        { scope: containerRef }
-    );
+  useGSAP(
+    () => {
+      if (videoRef.current) {
+        // Subtle parallax for the video background
+        gsap.to(videoRef.current, {
+          yPercent: 15,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+    },
+    { scope: containerRef },
+  );
 
-    const containerVariants: Variants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.18 },
-        },
-    };
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 },
+    },
+  };
 
-    const itemVariants: Variants = {
-        hidden: { y: 24, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: { type: "spring", stiffness: 280, damping: 28 },
-        },
-    };
+  const itemVariants: Variants = {
+    hidden: { y: 24, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 280, damping: 28 },
+    },
+  };
 
-    return (
-        <section
-            ref={containerRef}
-            className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center text-white"
+  return (
+    <section
+      id="home"
+      ref={containerRef}
+      className="relative min-h-screen w-full flex flex-col lg:flex-row bg-black text-white overflow-hidden"
+    >
+      {/* ── Mobile Logo (Hidden on Desktop) ── */}
+      <div className="lg:hidden absolute top-6 left-0 right-0 w-full flex items-center justify-center z-30">
+        {/* Replace with your actual Logo Image */}
+        <div className="text-2xl font-bold tracking-widest text-white drop-shadow-lg">
+          LOGO
+        </div>
+      </div>
+
+      {/* ── Left Side (Desktop) / Background (Mobile): Video Section ── */}
+      <div className="absolute inset-0 z-0 lg:relative lg:w-1/2 lg:h-screen lg:order-1 overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
+        {/* Desktop Logo (Hidden on Mobile) */}
+        <div className="hidden lg:block absolute top-8 left-8 xl:left-12 z-20">
+          <div className="text-3xl font-bold tracking-widest text-white drop-shadow-lg">
+            LOGO
+          </div>
+        </div>
+
+        {/* Video Background with GSAP Parallax */}
+        <div
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full scale-110 lg:-top-[10%] lg:h-[120%] will-change-transform"
         >
-            {/* ── Video Background with Parallax ── */}
-            <div
-                ref={bgRef}
-                className="absolute inset-0 z-0 scale-110 will-change-transform"
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src="/360Booth_Showreel.mp4" type="video/mp4" />
+          </video>
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/90 lg:bg-gradient-to-tr lg:from-black/70 lg:via-black/30 lg:to-transparent" />
+        </div>
+
+        {/* ── Desktop Headline (Overlays the Video) ── */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="hidden lg:flex absolute inset-0 z-30 flex-col items-center justify-center text-center px-8 pointer-events-none"
+        >
+          <motion.h1
+            variants={itemVariants}
+            className="text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tighter leading-[1.05] drop-shadow-2xl"
+          >
+            ELEVATE
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-sky-400">
+              YOUR EVENT
+            </span>
+            <br />
+            EXPERIENCE
+          </motion.h1>
+        </motion.div>
+      </div>
+
+      {/* ── Right Side (Desktop) / Foreground Content (Mobile) ── */}
+      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 pb-40 lg:w-1/2 lg:min-h-screen lg:items-start lg:text-left lg:px-16 xl:px-24 lg:py-16 order-2 bg-transparent lg:bg-black">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="flex flex-col items-center lg:items-start text-center lg:text-left w-full max-w-2xl lg:max-w-none"
+        >
+          {/* Badge */}
+          <motion.div
+            variants={itemVariants}
+            className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-xs tracking-[0.2em] uppercase font-medium text-white/80"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+            Premium Media Agency
+          </motion.div>
+
+          {/* ── Mobile Headline (Hidden on Desktop) ── */}
+          <motion.div
+            variants={itemVariants}
+            className="relative w-full lg:hidden"
+          >
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] drop-shadow-lg">
+              ELEVATE
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-sky-400">
+                YOUR EVENT
+              </span>
+              <br />
+              EXPERIENCE
+            </h1>
+          </motion.div>
+
+          {/* Subheadline */}
+          <motion.p
+            variants={itemVariants}
+            className="mt-6 lg:mt-2 text-base sm:text-lg text-white/70 lg:text-white/60 max-w-md font-light leading-relaxed"
+          >
+            Capturing Dubai&apos;s finest moments — from intimate gatherings to
+            grand spectacles.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+          >
+            <Link
+              href="#contact"
+              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold text-black bg-white rounded-full hover:bg-gray-200 hover:scale-[1.02] active:scale-95 transition-all duration-200 shadow-[0_0_32px_rgba(255,255,255,0.2)] focus-ring"
             >
-                <video
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                >
-                    <source src="/360Booth_Showreel.mp4" type="video/mp4" />
-                </video>
+              Get a Quote
+              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+            </Link>
 
-                {/* Multi-layer overlay: top fade for navbar legibility, center dim, bottom fade for smooth section transition */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
-            </div>
-
-            {/* ── Content ── */}
-            <motion.div
-                className="relative z-10 container mx-auto px-6 flex flex-col items-center justify-center text-center pt-32 pb-40"
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
+            <button
+              onClick={() => console.log("View Showreel Clicked")}
+              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold text-white border border-white/20 bg-white/5 lg:bg-transparent backdrop-blur-sm rounded-full hover:bg-white/10 hover:border-white/40 transition-all duration-200 focus-ring"
             >
-                {/* Badge */}
-                <motion.div
-                    variants={itemVariants}
-                    className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-xs tracking-[0.2em] uppercase font-medium text-white/80"
-                >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-                    Premium Media Agency · Dubai
-                </motion.div>
+              <Play className="w-4 h-4 fill-current" />
+              View Showreel
+            </button>
+          </motion.div>
 
-                {/* Main Heading */}
-                <motion.div
-                    variants={itemVariants}
-                    className="relative flex items-center justify-center w-full"
-                >
-                    {/* Rotated label — desktop only, absolutely positioned so it never overlaps heading */}
-                    <span
-                        aria-hidden="true"
-                        className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] tracking-[0.35em] text-white/40 font-medium whitespace-nowrap select-none"
-                    >
-                        YOUR
-                    </span>
+          {/* Service Tags */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-14 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 text-xs font-medium tracking-widest text-white/50 lg:text-white/30 uppercase"
+          >
+            {["Live Streaming", "360° Booths", "Media Production"].map(
+              (tag) => (
+                <span key={tag} className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-white/30 lg:bg-white/20" />
+                  {tag}
+                </span>
+              ),
+            )}
+          </motion.div>
+        </motion.div>
+      </div>
 
-                    <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-center">
-                        ELEVATE
-                        <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/40">
-                            YOUR EVENT
-                        </span>
-                        <br />
-                        EXPERIENCE
-                    </h1>
-                </motion.div>
-
-                {/* Subheading */}
-                <motion.p
-                    variants={itemVariants}
-                    className="mt-6 text-base sm:text-lg md:text-xl text-white/60 max-w-xl mx-auto font-light leading-relaxed"
-                >
-                    Capturing Dubai&apos;s finest moments — from intimate gatherings to grand spectacles.
-                </motion.p>
-
-                {/* CTA Buttons */}
-                <motion.div
-                    variants={itemVariants}
-                    className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-                >
-                    {/* Primary */}
-                    <button
-                        onClick={onOpenQuote}
-                        className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-sm sm:text-base font-semibold text-black bg-white rounded-full hover:bg-white/90 hover:scale-105 active:scale-95 transition-all duration-200 shadow-[0_0_32px_rgba(255,255,255,0.2)] focus-ring"
-                    >
-                        Get a Quote
-                        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-                    </button>
-
-                    {/* Secondary */}
-                    <button
-                        onClick={() => console.log("View Showreel Clicked")}
-                        className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-sm sm:text-base font-medium text-white border border-white/20 bg-white/5 backdrop-blur-sm rounded-full hover:bg-white/10 hover:border-white/40 transition-all duration-200 focus-ring"
-                    >
-                        <Play className="w-4 h-4 fill-current" />
-                        View Showreel
-                    </button>
-                </motion.div>
-
-                {/* Service Tags */}
-                <motion.div
-                    variants={itemVariants}
-                    className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3 text-xs font-medium tracking-widest text-white/40 uppercase"
-                >
-                    {["Premium Live Streaming", "360° Booths", "Media Production"].map((tag) => (
-                        <span key={tag} className="flex items-center gap-2">
-                            <span className="w-1 h-1 rounded-full bg-white/40" />
-                            {tag}
-                        </span>
-                    ))}
-                </motion.div>
-            </motion.div>
-
-            {/* ── Bottom Action Bar ── */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 hidden md:block">
-                <div className="container mx-auto px-6">
-                    <div className="bg-white/5 backdrop-blur-md border border-white/10 border-b-0 rounded-t-2xl px-6 py-4 flex items-center justify-between gap-4">
-                        {/* Location Pills */}
-                        <div className="flex gap-6 text-sm font-medium text-white/50">
-                            {["Dubai", "Abu Dhabi", "Sharjah"].map((city) => (
-                                <button
-                                    key={city}
-                                    className="hover:text-white transition-colors duration-200"
-                                >
-                                    {city}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Search pill */}
-                        <button className="flex items-center gap-3 bg-white/10 hover:bg-white/15 rounded-full px-5 py-2 border border-white/20 text-sm text-white/50 hover:text-white/80 transition-all duration-200">
-                            Search services…
-                            <ArrowRight className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Smooth bottom gradient → next section ── */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
-        </section>
-    );
+      {/* ── Smooth bottom gradient (Mobile Only) ── */}
+      <div className="lg:hidden absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
+    </section>
+  );
 }

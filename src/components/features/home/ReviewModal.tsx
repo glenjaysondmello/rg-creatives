@@ -64,11 +64,10 @@ function StarRating({
                     className="focus:outline-none group"
                 >
                     <Star
-                        className={`w-7 h-7 transition-all duration-150 ${
-                            star <= (hovered || value)
-                                ? "fill-sky-400 text-sky-400 scale-110"
-                                : "fill-transparent text-gray-600 group-hover:text-sky-400/50"
-                        }`}
+                        className={`w-7 h-7 transition-all duration-150 ${star <= (hovered || value)
+                            ? "fill-sky-400 text-sky-400 scale-110"
+                            : "fill-transparent text-gray-600 group-hover:text-sky-400/50"
+                            }`}
                     />
                 </button>
             ))}
@@ -88,18 +87,34 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
     const [submitted, setSubmitted] = useState(false);
     const overlayRef = useRef<HTMLDivElement>(null);
 
-    // Close on Escape
+    // Bulletproof Body & HTML Scroll Lock
     useEffect(() => {
         if (!isOpen) return;
-        const handler = (e: KeyboardEvent) => {
+
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
         };
-        document.addEventListener("keydown", handler);
-        // Lock body scroll
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        // Save original styles
+        const originalHtmlOverflow = window.getComputedStyle(document.documentElement).overflow;
+        const originalBodyOverflow = window.getComputedStyle(document.body).overflow;
+
+        // Calculate scrollbar width to prevent the layout from shifting left/right
+        const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+        // Force hidden on BOTH html and body tags (crucial for Next.js/mobile)
+        document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
+
         return () => {
-            document.removeEventListener("keydown", handler);
-            document.body.style.overflow = "";
+            document.removeEventListener("keydown", handleKeyDown);
+            // Restore original styles on unmount/close
+            document.documentElement.style.overflow = originalHtmlOverflow;
+            document.body.style.overflow = originalBodyOverflow;
+            document.body.style.paddingRight = "0px";
         };
     }, [isOpen, onClose]);
 
@@ -112,7 +127,6 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: wire to your API / backend
         console.log("Review submitted:", form);
         setSubmitted(true);
         setTimeout(() => {
@@ -140,7 +154,7 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.22 }}
                         onClick={handleOverlayClick}
-                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
                         aria-modal="true"
                         role="dialog"
                         aria-labelledby="review-modal-title"
@@ -153,12 +167,15 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
                             exit={{ opacity: 0, scale: 0.94, y: 20 }}
                             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                             className="relative w-full max-w-lg bg-[#0d0d0d] border border-white/10 rounded-[2rem] shadow-[0_40px_80px_rgba(0,0,0,0.8)] overflow-hidden"
+                            // Stop scroll events inside the modal from bubbling to the background
+                            onWheel={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
                         >
                             {/* Top accent line */}
                             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent" />
 
                             {/* Scrollable body */}
-                            <div className="overflow-y-auto max-h-[90vh] p-8">
+                            <div className="overflow-y-auto overscroll-contain max-h-[85vh] p-8">
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-8">
                                     <h2

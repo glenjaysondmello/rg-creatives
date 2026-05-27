@@ -3,6 +3,7 @@
 import { motion, Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 const projects = [
     { id: 1, title: "Dubai Tech Week", category: "Live Streaming", image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop", tall: true },
@@ -53,60 +54,123 @@ export function PortfolioSection() {
                     </button>
                 </motion.div>
 
-                {/* Masonry-style grid: first two items taller, rest normal */}
+                {/* ── Desktop / Tablet masonry grid (md+) ── */}
                 <motion.div
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-[380px]"
+                    className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-[380px]"
                     variants={container}
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, margin: "-80px" }}
                 >
                     {projects.map((project) => (
-                        <motion.div
-                            key={project.id}
-                            variants={cardAnim}
-                            whileHover="hover"
-                            className={`group relative w-full overflow-hidden rounded-[2rem] bg-gray-900 cursor-pointer ${project.tall ? "row-span-2" : "row-span-1"}`}
-                        >
-                            <Image
-                                src={project.image}
-                                alt={project.title}
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                className="object-cover transition-transform duration-700 group-hover:scale-108"
-                                style={{ transform: "scale(1)", transitionProperty: "transform" }}
-                            />
-
-                            {/* Gradient overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-50 group-hover:opacity-75 transition-opacity duration-400" />
-
-                            {/* Content — slides up on hover */}
-                            <div className="absolute inset-0 p-7 flex flex-col justify-end">
-                                <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-350 ease-out">
-                                    <span className="block text-[10px] font-bold tracking-[0.25em] text-white/60 uppercase mb-2">
-                                        {project.category}
-                                    </span>
-                                    <div className="flex items-end justify-between gap-3">
-                                        <h3 className="text-xl font-bold text-white leading-tight">
-                                            {project.title}
-                                        </h3>
-                                        <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 p-2 bg-white rounded-full">
-                                            <ArrowUpRight className="w-4 h-4 text-black" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
+                        <PortfolioCard key={project.id} project={project} />
                     ))}
                 </motion.div>
 
+                {/* ── Mobile horizontal snap carousel (< md) ── */}
+                <div className="md:hidden -mx-6 px-6">
+                    <div
+                        className={cn(
+                            "flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory",
+                            "hide-scrollbar pb-4"
+                        )}
+                    >
+                        {projects.map((project, index) => (
+                            <div
+                                key={project.id}
+                                /* 85vw width gives ~7.5vw peek of the next card */
+                                className="snap-center flex-none w-[85vw]"
+                            >
+                                <PortfolioCard project={project} isMobile mobileIndex={index} />
+                            </div>
+                        ))}
+                        {/* trailing spacer so last card can fully snap-center */}
+                        <div className="flex-none w-[7.5vw]" aria-hidden="true" />
+                    </div>
+
+                    {/* Dot indicators */}
+                    <div className="flex justify-center gap-1.5 mt-5">
+                        {projects.map((p) => (
+                            <span
+                                key={p.id}
+                                className="block w-1.5 h-1.5 rounded-full bg-white/20"
+                            />
+                        ))}
+                    </div>
+                </div>
+
                 {/* Mobile CTA */}
-                <div className="mt-12 text-center md:hidden">
+                <div className="mt-10 text-center md:hidden">
                     <button className="px-8 py-4 bg-transparent border border-white/20 text-white text-sm font-semibold rounded-full hover:bg-white hover:text-black transition-all duration-200 focus-ring">
                         View Full Archive
                     </button>
                 </div>
             </div>
         </section>
+    );
+}
+
+function PortfolioCard({
+    project,
+    isMobile = false,
+    mobileIndex = 0,
+}: {
+    project: (typeof projects)[number];
+    isMobile?: boolean;
+    mobileIndex?: number;
+}) {
+    return (
+        <motion.div
+            variants={isMobile ? undefined : cardAnim}
+            initial={isMobile ? { opacity: 0, y: 24, scale: 0.98 } : undefined}
+            whileInView={isMobile ? { opacity: 1, y: 0, scale: 1 } : undefined}
+            viewport={isMobile ? { once: true } : undefined}
+            transition={
+                isMobile
+                    ? { delay: mobileIndex * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+                    : undefined
+            }
+            /* Active-state: scale + stronger shadow on tap */
+            whileTap={isMobile ? { scale: 1.03, boxShadow: "0 16px_56px rgba(255,255,255,0.10)" } : undefined}
+            whileHover={!isMobile ? "hover" : undefined}
+            className={cn(
+                "group relative w-full overflow-hidden rounded-[2rem] bg-gray-900 cursor-pointer",
+                /* Mobile card height is fixed; desktop respects row-span */
+                isMobile ? "h-[420px]" : project.tall ? "row-span-2" : "row-span-1",
+                "transition-shadow duration-300"
+            )}
+        >
+            <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                sizes={
+                    isMobile
+                        ? "85vw"
+                        : "(max-width: 1200px) 50vw, 33vw"
+                }
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-50 group-hover:opacity-75 transition-opacity duration-400" />
+
+            {/* Content — slides up on hover */}
+            <div className="absolute inset-0 p-7 flex flex-col justify-end">
+                <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-350 ease-out">
+                    <span className="block text-[10px] font-bold tracking-[0.25em] text-white/60 uppercase mb-2">
+                        {project.category}
+                    </span>
+                    <div className="flex items-end justify-between gap-3">
+                        <h3 className="text-xl font-bold text-white leading-tight">
+                            {project.title}
+                        </h3>
+                        <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 p-2 bg-white rounded-full">
+                            <ArrowUpRight className="w-4 h-4 text-black" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
     );
 }
