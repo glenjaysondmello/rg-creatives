@@ -5,7 +5,7 @@ import { motion, Variants } from "framer-motion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 // Register GSAP plugins
@@ -20,9 +20,9 @@ export function HeroSection() {
   useGSAP(
     () => {
       if (videoRef.current) {
-        // Subtle parallax for the video background
+        // Reversed parallax: starts flush at the top, moves up slightly as you scroll down
         gsap.to(videoRef.current, {
-          yPercent: 15,
+          yPercent: -15,
           ease: "none",
           scrollTrigger: {
             trigger: containerRef.current,
@@ -57,29 +57,30 @@ export function HeroSection() {
     <section
       id="home"
       ref={containerRef}
-      className="relative min-h-screen w-full flex flex-col lg:flex-row bg-black text-white overflow-hidden"
+      // Pushed exactly below the navbar (80px) and adjusted the height
+      className="relative min-h-[calc(100vh-80px)] mt-[80px] w-full flex flex-col lg:flex-row bg-black text-white overflow-hidden"
     >
       {/* ── Mobile Logo (Hidden on Desktop) ── */}
-      <div className="lg:hidden absolute top-6 left-0 right-0 w-full flex items-center justify-center z-30">
-        {/* Replace with your actual Logo Image */}
+      {/* <div className="lg:hidden absolute top-6 left-0 right-0 w-full flex items-center justify-center z-30">
         <div className="text-2xl font-bold tracking-widest text-white drop-shadow-lg">
           LOGO
         </div>
-      </div>
+      </div> */}
 
       {/* ── Left Side (Desktop) / Background (Mobile): Video Section ── */}
-      <div className="absolute inset-0 z-0 lg:relative lg:w-1/2 lg:h-screen lg:order-1 overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
+      <div className="absolute inset-0 z-0 lg:relative lg:w-1/2 lg:h-[calc(100vh-80px)] lg:order-1 overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
         {/* Desktop Logo (Hidden on Mobile) */}
-        <div className="hidden lg:block absolute top-8 left-8 xl:left-12 z-20">
+        {/* <div className="hidden lg:block absolute top-8 left-8 xl:left-12 z-20">
           <div className="text-3xl font-bold tracking-widest text-white drop-shadow-lg">
             LOGO
           </div>
-        </div>
+        </div> */}
 
         {/* Video Background with GSAP Parallax */}
+        {/* Removed scale & negative top margins. Now perfectly fits 100% of the video frame */}
         <div
           ref={videoRef}
-          className="absolute inset-0 w-full h-full scale-110 lg:-top-[10%] lg:h-[120%] will-change-transform"
+          className="absolute top-0 left-0 w-full h-[115%] will-change-transform"
         >
           <video
             className="w-full h-full object-cover"
@@ -117,7 +118,7 @@ export function HeroSection() {
       </div>
 
       {/* ── Right Side (Desktop) / Foreground Content (Mobile) ── */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 pb-40 lg:w-1/2 lg:min-h-screen lg:items-start lg:text-left lg:px-16 xl:px-24 lg:py-16 order-2 bg-transparent lg:bg-black">
+      <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center px-6 pt-24 pb-32 lg:w-1/2 lg:min-h-[calc(100vh-80px)] lg:items-start lg:text-left lg:px-16 xl:px-24 lg:py-16 order-2 bg-transparent lg:bg-black">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -171,13 +172,12 @@ export function HeroSection() {
               <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
 
-            <button
-              onClick={() => console.log("View Showreel Clicked")}
+            <Link
+              href="#services"
               className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold text-white border border-white/20 bg-white/5 lg:bg-transparent backdrop-blur-sm rounded-full hover:bg-white/10 hover:border-white/40 transition-all duration-200 focus-ring"
             >
-              <Play className="w-4 h-4 fill-current" />
-              View Showreel
-            </button>
+              Explore Services
+            </Link>
           </motion.div>
 
           {/* Service Tags */}

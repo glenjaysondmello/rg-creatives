@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 type Service = {
@@ -14,7 +14,6 @@ type Service = {
   image: string;
   video?: string;
   description: string;
-  extendedDetails: string;
 };
 
 const services: Service[] = [
@@ -28,8 +27,6 @@ const services: Service[] = [
     video:
       "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-blue-and-pink-light-996-large.mp4",
     description:
-      "Create immersive and viral event experiences with our premium 360 video booth setup.",
-    extendedDetails:
       "Includes HD/4K 360 video capture, instant social media sharing, custom branding & overlays, LED lighting setup, props & premium backdrop options, and on-site technical support.",
   },
   {
@@ -37,11 +34,8 @@ const services: Service[] = [
     title: "DSLR Photo Booth",
     tag: "Studio Quality",
     className: "",
-    image:
-      "https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1000&auto=format&fit=crop",
+    image: "/photo_booth.png",
     description:
-      "Professional DSLR-powered photo booth experience with studio-quality images and instant guest interaction.",
-    extendedDetails:
       "Features professional DSLR camera quality, instant prints & digital sharing, touchscreen interactive booth, custom templates & branding, GIFs, boomerangs & filters, and elegant booth setup.",
   },
   {
@@ -52,8 +46,6 @@ const services: Service[] = [
     image:
       "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop",
     description:
-      "Broadcast your event live to audiences anywhere in the world with reliable multi-camera live streaming solutions.",
-    extendedDetails:
       "Multi-camera production, professional audio integration, real-time switching, internet & backup solutions, and an on-site streaming technician.",
   },
   {
@@ -64,8 +56,6 @@ const services: Service[] = [
     image:
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop",
     description:
-      "Seamlessly connect in-person and virtual audiences with professional hybrid event production services.",
-    extendedDetails:
       "Multi-platform integration, live presentation support, professional audio/video setup, audience interaction tools, and recording & replay options.",
   },
   {
@@ -78,18 +68,53 @@ const services: Service[] = [
     video:
       "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-blue-and-pink-light-996-large.mp4",
     description:
-      "Capture unforgettable moments with cinematic photography and professional video production services.",
-    extendedDetails:
       "Event photography, cinematic videography, corporate shoots, social media content creation, promotional videos, and highlight reels & aftermovies.",
   },
 ];
 
 export function ServiceGallery() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isInteracting, setIsInteracting] = useState(false);
+
+  useEffect(() => {
+    if (isInteracting) return;
+
+    const interval = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+
+        if (container.scrollLeft >= maxScroll - 10) {
+          container.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          const firstChild = container.children[0] as HTMLElement;
+          const cardWidth = firstChild
+            ? firstChild.offsetWidth + 16
+            : window.innerWidth * 0.85;
+          container.scrollBy({ left: cardWidth, behavior: "smooth" });
+        }
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isInteracting]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    if (maxScroll <= 0) return;
+
+    const scrollPercent = container.scrollLeft / maxScroll;
+    const index = Math.round(scrollPercent * (services.length - 1));
+    setActiveIndex(index);
+  };
+
   return (
     <section id="services" className="py-28 bg-black text-white">
       <div className="container mx-auto px-6">
         <motion.div
-          className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6"
+          className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -105,25 +130,32 @@ export function ServiceGallery() {
               SERVICES.
             </h2>
           </div>
-          <button className="hidden md:inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white border border-white/20 rounded-full hover:bg-white/5 hover:border-white/30 transition-all duration-200 focus-ring">
-            View All Services <ArrowUpRight className="w-4 h-4" />
-          </button>
         </motion.div>
 
-        {/* ── Desktop / Tablet grid (md+) ── */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Desktop Layout */}
+        <div className="hidden md:flex flex-wrap justify-center gap-5">
           {services.map((service, index) => (
-            <ServiceCard key={service.id} service={service} index={index} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              className="w-[calc(50%-10px)] lg:w-[calc(33.333%-13.33px)]"
+            />
           ))}
         </div>
 
-        {/* ── Mobile horizontal snap carousel (< md) ── */}
+        {/* Mobile Layout — Changed snap-mandatory to snap-proximity */}
         <div className="md:hidden -mx-6 px-6">
           <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            onTouchStart={() => setIsInteracting(true)}
+            onTouchEnd={() => {
+              setTimeout(() => setIsInteracting(false), 2000);
+            }}
             className={cn(
-              "flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory",
-              "hide-scrollbar",
-              "pb-4",
+              "flex gap-4 overflow-x-auto scroll-smooth snap-x snap-proximity",
+              "hide-scrollbar pb-4",
             )}
           >
             {services.map((service, index) => (
@@ -134,20 +166,17 @@ export function ServiceGallery() {
             <div className="flex-none w-[7.5vw]" aria-hidden="true" />
           </div>
 
-          <div className="flex justify-center gap-1.5 mt-5">
-            {services.map((s) => (
+          <div className="flex justify-center items-center gap-2 mt-5">
+            {services.map((s, idx) => (
               <span
                 key={s.id}
-                className="block w-1.5 h-1.5 rounded-full bg-white/20"
+                className={cn(
+                  "block h-1.5 rounded-full transition-all duration-300 ease-in-out",
+                  activeIndex === idx ? "w-5 bg-white" : "w-1.5 bg-white/20",
+                )}
               />
             ))}
           </div>
-        </div>
-
-        <div className="mt-10 text-center md:hidden">
-          <button className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 focus-ring">
-            View All Services <ArrowUpRight className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </section>
@@ -158,24 +187,18 @@ function ServiceCard({
   service,
   index,
   isMobile = false,
+  className,
 }: {
   service: Service;
   index: number;
   isMobile?: boolean;
+  className?: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isDetailsTabOpen, setIsDetailsTabOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <motion.div
-      className={cn(
-        "group flex flex-col bg-gray-900 border border-white/10 rounded-[2rem] overflow-hidden relative",
-        "hover:border-white/20 hover:shadow-[0_8px_40px_rgba(255,255,255,0.04)]",
-        "transition-all duration-300",
-        isMobile &&
-          "active:scale-[1.02] active:shadow-[0_12px_48px_rgba(255,255,255,0.08)]",
-        service.className,
-      )}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -184,104 +207,100 @@ function ServiceCard({
         duration: 0.5,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileTap={
-        isMobile
-          ? { scale: 1.025, boxShadow: "0 12px 48px rgba(255,255,255,0.08)" }
-          : undefined
-      }
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
-        if (!isMobile) setIsDetailsTabOpen(false);
+        if (!isMobile) setIsExpanded(false);
       }}
+      onClick={() => setIsExpanded(!isExpanded)}
+      className={cn(
+        "group relative w-full overflow-hidden rounded-4xl bg-gray-900 cursor-pointer h-[420px]",
+        // Uses native CSS transitions on mobile active taps to keep scrolls fluid
+        isMobile &&
+          "active:scale-[1.02] active:shadow-[0_16px_56px_rgba(255,255,255,0.1)] transition-all duration-200",
+        className,
+        service.className,
+      )}
     >
-      {/* Upper Half: Media */}
-      <div className="relative h-64 w-full overflow-hidden bg-gray-800">
-        <div className="absolute top-4 left-4 z-20 px-3 py-1 text-xs font-bold tracking-widest text-black bg-white rounded-md uppercase">
-          {service.tag}
-        </div>
+      <Image
+        src={service.image}
+        alt={service.title}
+        fill
+        sizes={isMobile ? "85vw" : "(max-width: 1200px) 50vw, 33vw"}
+        className="object-cover transition-transform duration-700 lg:group-hover:scale-105 z-0"
+      />
 
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
-          sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105 z-0"
-        />
-
-        {service.video && isHovered && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 z-10"
-          >
-            <video
-              src={service.video}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        )}
-      </div>
-
-      {/* Lower Half: Content */}
-      <div className="p-7 flex flex-col flex-grow justify-between relative">
-        <div>
-          <h3 className="text-xl font-bold leading-tight mb-3">
-            {service.title}
-          </h3>
-          <p
-            className="text-gray-400 text-sm line-clamp-2 leading-relaxed"
-            title={service.description}
-          >
-            {service.description}
-          </p>
-        </div>
-
-        {/* Bottom Bar Area */}
-        <div
-          className="relative mt-5 pt-5 border-t border-white/10"
-          onMouseEnter={() => !isMobile && setIsDetailsTabOpen(true)}
-          onMouseLeave={() => !isMobile && setIsDetailsTabOpen(false)}
+      {service.video && isHovered && !isMobile && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 z-0"
         >
-          {/* The Mini Tab Popover */}
-          <AnimatePresence>
-            {isDetailsTabOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute bottom-[calc(100%+0.5rem)] left-0 w-full bg-white text-black p-5 rounded-2xl shadow-2xl z-30"
-              >
-                <h4 className="text-sm font-bold uppercase tracking-wider mb-2 text-gray-900">
-                  What`&apos;`s Included
-                </h4>
-                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                  {service.extendedDetails}
-                </p>
-                {/* Triangle indicator */}
-                <div className="absolute -bottom-2 left-6 w-4 h-4 bg-white transform rotate-45 rounded-sm" />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <video
+            src={service.video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+      )}
 
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => isMobile && setIsDetailsTabOpen(!isDetailsTabOpen)}
-              className="text-xs font-bold tracking-[0.15em] text-white hover:text-gray-300 transition-colors uppercase focus-ring outline-none"
+      <div
+        className={cn(
+          "absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent transition-opacity duration-400 z-10",
+          isExpanded ? "opacity-90" : "opacity-60 lg:group-hover:opacity-90",
+        )}
+      />
+
+      <div className="absolute inset-0 p-7 flex flex-col justify-end z-20">
+        <div
+          className={cn(
+            "transform transition-transform duration-350 ease-out",
+            isExpanded
+              ? "translate-y-0"
+              : "translate-y-4 lg:group-hover:translate-y-0",
+          )}
+        >
+          <span className="block text-[10px] font-bold tracking-[0.25em] text-white/60 uppercase mb-2">
+            {service.tag}
+          </span>
+
+          <div className="flex items-end justify-between gap-3">
+            <h3 className="text-xl font-bold text-white leading-tight">
+              {service.title}
+            </h3>
+            <div
+              className={cn(
+                "shrink-0 p-2 bg-white rounded-full lg:hidden transition-transform duration-300",
+                isExpanded && "rotate-45",
+              )}
             >
-              Details
-            </button>
-            <button
-              onClick={() => isMobile && setIsDetailsTabOpen(!isDetailsTabOpen)}
-              className="p-2.5 bg-white/5 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200 cursor-pointer outline-none"
-            >
-              <ArrowUpRight className="w-4 h-4 text-white" />
-            </button>
+              <ArrowUpRight className="w-4 h-4 text-black" />
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "grid transition-[grid-template-rows] duration-300 ease-out mt-1",
+              isExpanded
+                ? "grid-rows-[1fr]"
+                : "grid-rows-[0fr] lg:group-hover:grid-rows-[1fr]",
+            )}
+          >
+            <div className="overflow-hidden">
+              <p
+                className={cn(
+                  "text-sm text-gray-300 pt-3 transition-opacity duration-300 delay-100",
+                  isExpanded
+                    ? "opacity-100"
+                    : "opacity-0 lg:group-hover:opacity-100",
+                )}
+              >
+                {service.description}
+              </p>
+            </div>
           </div>
         </div>
       </div>
