@@ -131,7 +131,7 @@ export function HeroSection() {
             className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-xs tracking-[0.2em] uppercase font-medium text-white/80"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-            Premium Media Agency
+            Premium Media Services
           </motion.div>
 
           {/* ── Mobile Headline (Hidden on Desktop) ── */}
