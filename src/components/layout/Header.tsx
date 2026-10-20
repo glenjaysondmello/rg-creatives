@@ -9,20 +9,27 @@ import Image from "next/image";
 const NAV_LINKS = [
   { href: "#home", label: "Home" },
   { href: "#services", label: "Services" },
-  { href: "#portfolio", label: "Work" },
-  // { href: "#pricing", label: "Pricing" },
-  // { href: "#testimonials", label: "Reviews" },
-  // { href: "#contact", label: "Contact" },
+  { href: "#corporate", label: "Corporate Events" },
+  { href: "#portfolio", label: "Portfolio" },
+  { href: "#why-us", label: "About Us" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#contact", label: "Contact" },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("#home");
 
-  // Track scroll for header background
+  // Track scroll for header background + home active state
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 30);
+      // When near the very top, always mark Home as active
+      if (window.scrollY < 80) {
+        setActiveSection("#home");
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -37,8 +44,8 @@ export function Header() {
           }
         });
       },
-      // Triggers when the section crosses the vertical center of the viewport
-      { rootMargin: "-50% 0px -50% 0px" },
+      // Use a looser rootMargin so the home hero (which is very tall) triggers reliably
+      { rootMargin: "-10% 0px -50% 0px", threshold: 0 },
     );
 
     NAV_LINKS.forEach((link) => {
@@ -46,10 +53,6 @@ export function Header() {
       const element = document.getElementById(id);
       if (element) observer.observe(element);
     });
-
-    // Also observe contact section
-    const contactElement = document.getElementById("contact");
-    if (contactElement) observer.observe(contactElement);
 
     return () => observer.disconnect();
   }, []);
@@ -62,65 +65,66 @@ export function Header() {
     };
   }, [mobileOpen]);
 
-  // Smooth scroll handler that works every time
-  // Smooth scroll handler that works every time
   const handleScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
     targetId: string,
   ) => {
     e.preventDefault();
-
-    // 1. Close mobile menu
     setMobileOpen(false);
-
-    // 2. Immediately force-unlock the scroll so the browser allows movement
     document.body.style.overflow = "";
+
+    // Home always scrolls to the very top
+    if (targetId === "#home") {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+      setActiveSection("#home");
+      window.history.pushState(null, "", "#home");
+      return;
+    }
 
     const id = targetId.replace("#", "");
     const element = document.getElementById(id);
 
     if (element) {
-      // 3. Add a slight delay to let React process the menu closing
-      // and let the browser register the unlocked body before scrolling
       setTimeout(() => {
         element.scrollIntoView({ behavior: "smooth" });
       }, 50);
-
-      // Update the URL hash silently
       window.history.pushState(null, "", targetId);
     }
   };
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "py-3 bg-black/80 backdrop-blur-md border-b border-white/10 shadow-[0_2px_32px_rgba(0,0,0,0.6)]"
-          : "py-5 bg-black md:bg-black/40 backdrop-blur-sm"
+          ? "py-3 bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
+          : "py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm"
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <div className="relative w-32 md:w-40 h-8 md:h-10 shrink-0">
-          <Link
-            href="#home"
-            onClick={(e) => handleScroll(e, "#home")}
-            className="absolute top-1/2 -translate-y-1/2 left-0 hover:opacity-75 transition-opacity duration-200 focus-ring rounded-sm z-10 flex items-center"
-          >
+        <Link
+          href="#home"
+          onClick={(e) => handleScroll(e, "#home")}
+          className="group flex items-center focus-ring rounded-lg py-1"
+          aria-label="RG Creatives Home"
+        >
+          <div className="relative h-11 w-32 md:w-36 lg:w-44 transition-transform duration-200 group-hover:scale-105">
             <Image
-              src="/rg_logo.png"
-              alt="Company Logo"
-              width={210}
-              height={66}
-              className="w-auto h-14 md:h-18 object-contain max-w-none"
+              src="/logo.png"
+              alt="RG Creatives FZE - Event Production & Media"
+              fill
               priority
+              className="object-contain object-left"
+              sizes="(max-width: 640px) 144px, 176px"
             />
-          </Link>
-        </div>
+          </div>
+        </Link>
 
-        {/* Center Nav — desktop */}
+        {/* Center Nav — desktop/tablet (md+) */}
         <nav
-          className="hidden md:flex items-center gap-1"
+          className="hidden md:flex items-center gap-0.5 lg:gap-1 xl:gap-2"
           aria-label="Primary navigation"
         >
           {NAV_LINKS.map((link) => {
@@ -131,47 +135,49 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleScroll(e, link.href)}
-                className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-colors duration-200 rounded-lg hover:bg-white/5 group focus-ring ${
-                  isActive ? "text-white" : "text-white/60 hover:text-white"
+                className={`relative px-2 md:px-2.5 lg:px-3.5 py-1.5 text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-wide transition-all duration-200 rounded-full hover:text-white ${
+                  isActive
+                    ? "text-amber-400 bg-white/5"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
                 }`}
               >
                 {link.label}
-                {/* Underline accent */}
-                <span
-                  className={`absolute bottom-1 left-4 right-4 h-px bg-white/80 transition-transform duration-300 origin-left rounded-full ${
-                    isActive
-                      ? "scale-x-100"
-                      : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
+                {isActive && (
+                  <span className="absolute bottom-0.5 left-3.5 right-3.5 h-[2px] bg-amber-400 rounded-full" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Actions */}
+        {/* Right Action: WhatsApp Button */}
         <div className="flex items-center gap-3">
-          {/* CTA */}
-          <Link
-            href="#contact"
-            onClick={(e) => handleScroll(e, "#contact")}
-            className="hidden sm:inline-flex px-5 py-2.5 text-sm font-semibold text-black bg-white rounded-full hover:bg-white/90 hover:scale-105 active:scale-95 transition-all duration-200 shadow-[0_0_24px_rgba(255,255,255,0.18)] focus-ring"
+          <a
+            href="https://wa.me/971559617957"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden lg:inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-zinc-900/90 hover:bg-zinc-800 border border-emerald-500/40 hover:border-emerald-500 rounded-full transition-all duration-200 hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.15)] group"
           >
-            Contact
-          </Link>
+            <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+              <svg
+                viewBox="0 0 24 24"
+                className="w-3 h-3 fill-black"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M17.472 14.382c-.301-.15-1.782-.879-2.058-.979-.276-.1-.476-.15-.677.15-.2.301-.776.98-.952 1.18-.176.2-.351.226-.652.075-.301-.15-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.676-2.085-.176-.3-.019-.462.132-.612.136-.135.301-.351.452-.527.15-.176.2-.301.301-.502.1-.2.05-.376-.025-.526-.075-.15-.677-1.632-.928-2.235-.245-.588-.493-.508-.677-.518-.175-.009-.376-.009-.577-.009-.2 0-.527.075-.802.376-.276.3-1.053 1.029-1.053 2.509 0 1.48 1.079 2.91 1.229 3.111.15.2 2.122 3.24 5.14 4.544.718.31 1.279.496 1.716.635.722.23 1.379.197 1.9.12.58-.086 1.782-.728 2.033-1.431.251-.703.251-1.306.176-1.431-.075-.126-.276-.201-.577-.352z" />
+              </svg>
+            </div>
+            <span>WhatsApp Us</span>
+          </a>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — only shown below md breakpoint */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors focus-ring"
+            className="md:hidden p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors focus-ring"
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
@@ -184,7 +190,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
+            className="overflow-hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
           >
             <nav
               className="flex flex-col px-6 py-4 gap-1"
@@ -205,7 +211,7 @@ export function Header() {
                       onClick={(e) => handleScroll(e, link.href)}
                       className={`flex items-center py-3.5 px-2 text-base font-medium border-b border-white/5 last:border-none transition-colors ${
                         isActive
-                          ? "text-white pl-4 border-l-2 border-l-white bg-white/5 rounded-r-lg"
+                          ? "text-amber-400 pl-4 border-l-2 border-l-amber-400 bg-white/5 rounded-r-lg"
                           : "text-white/70 hover:text-white"
                       }`}
                     >
@@ -220,14 +226,22 @@ export function Header() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: NAV_LINKS.length * 0.06, duration: 0.18 }}
-                className="pt-4"
+                className="pt-4 flex flex-col gap-3"
               >
+                <a
+                  href="https://wa.me/971559617957"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 px-6 text-sm font-semibold text-white bg-emerald-600 rounded-full hover:bg-emerald-500 transition-colors shadow-lg"
+                >
+                  WhatsApp Us (+971 55 961 7957)
+                </a>
                 <Link
                   href="#contact"
                   onClick={(e) => handleScroll(e, "#contact")}
-                  className="flex items-center justify-center w-full py-3 px-6 text-sm font-semibold text-black bg-white rounded-full hover:bg-white/90 transition-colors"
+                  className="flex items-center justify-center w-full py-3 px-6 text-sm font-bold text-black bg-amber-400 rounded-full hover:bg-amber-300 transition-colors"
                 >
-                  Contact Us
+                  Get a Quote
                 </Link>
               </motion.div>
             </nav>

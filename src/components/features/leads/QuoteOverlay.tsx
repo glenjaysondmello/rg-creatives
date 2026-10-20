@@ -1,193 +1,268 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, X, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 
 type QuoteOverlayProps = {
-    isOpen: boolean;
-    onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  initialService?: string;
 };
 
-const services = [
-    "360 Booth",
-    "Video Editing",
-    "Live Streaming",
-    "Event Photography",
-    "Other",
+const SERVICES = [
+  "Live Streaming",
+  "Hybrid Events",
+  "Multi-Camera Coverage",
+  "Event Photography",
+  "Event Videography",
+  "360° Photo Booth",
+  "DSLR Photobooth",
+  "Full Production Package",
 ];
 
-export function QuoteOverlay({ isOpen, onClose }: QuoteOverlayProps) {
-    const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState({
-        service: "",
+export function QuoteOverlay({
+  isOpen,
+  onClose,
+  initialService,
+}: QuoteOverlayProps) {
+  const [step, setStep] = useState(initialService ? 2 : 1);
+  const [formData, setFormData] = useState({
+    service: initialService || "Live Streaming",
+    name: "",
+    date: "",
+    venue: "",
+    phone: "",
+    details: "",
+  });
+
+  const handleServiceSelect = (service: string) => {
+    setFormData((prev) => ({ ...prev, service }));
+    setStep(2);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const text = `Hello RG Creatives! I would like to request a quote:
+• Service: ${formData.service}
+• Client: ${formData.name}
+• Date: ${formData.date}
+• Venue: ${formData.venue || "Dubai / UAE"}
+• Phone: ${formData.phone}
+${formData.details ? `• Details: ${formData.details}` : ""}`;
+
+    const encoded = encodeURIComponent(text);
+    const targetPhone = "971559617957"; // from PDF
+    window.open(`https://wa.me/${targetPhone}?text=${encoded}`, "_blank");
+
+    onClose();
+    setTimeout(() => {
+      setStep(1);
+      setFormData({
+        service: "Live Streaming",
         name: "",
         date: "",
-        whatsapp: "",
-    });
+        venue: "",
+        phone: "",
+        details: "",
+      });
+    }, 400);
+  };
 
-    const handleServiceSelect = (service: string) => {
-        setFormData((prev) => ({ ...prev, service }));
-        setStep(2);
-    };
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+          />
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Format WhatsApp Message
-        const message = `Hi, I'm interested in ${formData.service} for an event on ${formData.date}. My name is ${formData.name}.`;
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`; // Add generic number or specific one if provided
+          {/* Slide-in Drawer */}
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 260 }}
+            className="relative w-full max-w-lg bg-zinc-950 border-l border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col justify-between overflow-y-auto z-10"
+          >
+            <div>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
+                <div>
+                  <span className="text-[11px] font-bold text-amber-400 tracking-[0.2em] uppercase">
+                    RG CREATIVES DUBAI
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                    Request an Event Quote
+                  </h3>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-        // In a real app, you'd likely target a specific number, e.g., wa.me/971500000000
-        // For now, I'll use a placeholder or empty to let user select contact if on mobile, 
-        // but usually a number is required. I'll add a placeholder number 971500000000.
-        const targetNumber = "971500000000"; // Replace with actual agency number
-        window.open(`https://wa.me/${targetNumber}?text=${encodedMessage}`, "_blank");
+              {/* Progress Indicator */}
+              <div className="flex items-center gap-2 mb-8">
+                <div
+                  className={`h-1.5 flex-1 rounded-full ${
+                    step >= 1 ? "bg-amber-400" : "bg-white/10"
+                  }`}
+                />
+                <div
+                  className={`h-1.5 flex-1 rounded-full ${
+                    step >= 2 ? "bg-amber-400" : "bg-white/10"
+                  }`}
+                />
+              </div>
 
-        onClose();
-        // Reset form after delay
-        setTimeout(() => {
-            setStep(1);
-            setFormData({ service: "", name: "", date: "", whatsapp: "" });
-        }, 500);
-    };
+              {/* Step 1: Select Service */}
+              {step === 1 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                    Step 1: Select Required Service
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {SERVICES.map((srv) => (
+                      <button
+                        key={srv}
+                        onClick={() => handleServiceSelect(srv)}
+                        className={`p-3.5 text-left rounded-xl border text-xs sm:text-sm font-semibold transition-all ${
+                          formData.service === srv
+                            ? "border-amber-400 bg-amber-400/10 text-white"
+                            : "border-white/10 bg-zinc-900/60 text-gray-300 hover:border-white/20 hover:text-white hover:bg-zinc-800"
+                        }`}
+                      >
+                        {srv}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <>
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
-                    />
-
-                    {/* Slide-Over Panel */}
-                    <motion.div
-                        initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
-                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed inset-y-0 right-0 z-[60] w-full max-w-md bg-zinc-900 border-l border-white/10 shadow-2xl overflow-y-auto"
+              {/* Step 2: Details & Direct WhatsApp Dispatch */}
+              {step === 2 && (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="flex items-center justify-between pb-2">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Selected:{" "}
+                      <span className="text-amber-400">{formData.service}</span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-xs text-amber-400 hover:underline inline-flex items-center gap-1"
                     >
-                        <div className="p-6 md:p-8 min-h-full flex flex-col">
-                            {/* Header */}
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-2xl font-bold text-white">Get a Quote</h2>
-                                <button
-                                    onClick={onClose}
-                                    className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
+                      <ArrowLeft className="w-3 h-3" /> Change
+                    </button>
+                  </div>
 
-                            {/* Progress Bar */}
-                            <div className="w-full h-1 bg-white/10 rounded-full mb-8 overflow-hidden">
-                                <motion.div
-                                    className="h-full bg-purple-500"
-                                    initial={{ width: "50%" }}
-                                    animate={{ width: step === 1 ? "50%" : "100%" }}
-                                />
-                            </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                      Your Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Sarah Jenkins"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-amber-400"
+                    />
+                  </div>
 
-                            {/* Content */}
-                            <div className="flex-1">
-                                {step === 1 ? (
-                                    <div className="space-y-4">
-                                        <p className="text-gray-400 mb-6">
-                                            What service are you looking for?
-                                        </p>
-                                        <div className="grid gap-3">
-                                            {services.map((s) => (
-                                                <button
-                                                    key={s}
-                                                    onClick={() => handleServiceSelect(s)}
-                                                    className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all text-lg font-medium text-white"
-                                                >
-                                                    {s}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setStep(1)}
-                                            className="flex items-center text-sm text-gray-400 hover:text-white mb-4 transition-colors"
-                                        >
-                                            <ArrowLeft className="w-4 h-4 mr-1" />
-                                            Back to Services
-                                        </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Event Date *
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        value={formData.date}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 [color-scheme:dark]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Venue / Location
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Dubai / Abu Dhabi"
+                        value={formData.venue}
+                        onChange={(e) =>
+                          setFormData({ ...formData, venue: e.target.value })
+                        }
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
 
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-400 mb-1">
-                                                    Your Name
-                                                </label>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    value={formData.name}
-                                                    onChange={(e) =>
-                                                        setFormData({ ...formData, name: e.target.value })
-                                                    }
-                                                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                    placeholder="John Doe"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-400 mb-1">
-                                                    Event Date
-                                                </label>
-                                                <input
-                                                    required
-                                                    type="date"
-                                                    value={formData.date}
-                                                    onChange={(e) =>
-                                                        setFormData({ ...formData, date: e.target.value })
-                                                    }
-                                                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-400 mb-1">
-                                                    WhatsApp Number
-                                                </label>
-                                                <input
-                                                    required
-                                                    type="tel"
-                                                    value={formData.whatsapp}
-                                                    onChange={(e) =>
-                                                        setFormData({ ...formData, whatsapp: e.target.value })
-                                                    }
-                                                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                    placeholder="+971 50 123 4567"
-                                                />
-                                            </div>
-                                        </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                      WhatsApp / Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+971 50 123 4567"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-amber-400"
+                    />
+                  </div>
 
-                                        <button
-                                            type="submit"
-                                            className="w-full py-4 mt-8 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-transform active:scale-95"
-                                        >
-                                            Continue to WhatsApp
-                                        </button>
-                                        <p className="text-center text-xs text-gray-500">
-                                            We'll open WhatsApp to confirm details.
-                                        </p>
-                                    </form>
-                                )}
-                            </div>
-                        </div>
-                    </motion.div>
-                </>
-            )}
-        </AnimatePresence>
-    );
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                      Event Scope / Requirements
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Estimated audience size, number of hours, specific requirements..."
+                      value={formData.details}
+                      onChange={(e) =>
+                        setFormData({ ...formData, details: e.target.value })
+                      }
+                      className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-amber-400 resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 mt-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-sm tracking-wide transition-all shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-[1.02] active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Send Quote Request via WhatsApp
+                  </button>
+                  <p className="text-[11px] text-gray-500 text-center">
+                    Instant confirmation directly with RG Creatives on-site team.
+                  </p>
+                </form>
+              )}
+            </div>
+
+            <div className="pt-6 border-t border-white/10 text-center text-xs text-gray-500 mt-6">
+              Official Contact: +971 55 961 7957 • rgcreatives23@gmail.com
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 }

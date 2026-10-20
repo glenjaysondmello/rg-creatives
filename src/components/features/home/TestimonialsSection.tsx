@@ -1,138 +1,131 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Quote, PenLine } from "lucide-react";
+import { Star, PenLine } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { ReviewModal } from "./ReviewModal";
 
-const testimonials = [
-    {
-        id: 1,
-        name: "Sarah Jenkins",
-        location: "Dubai, UAE",
-        text: "The team captured our corporate gala perfectly. The live stream was flawless and the cinematic recap video exceeded all our expectations.",
-        category: "Corporate Event",
-    },
-    {
-        id: 2,
-        name: "Ahmed Al Maktoum",
-        location: "Abu Dhabi, UAE",
-        text: "Absolute professionals. Their 360 booth was the highlight of the evening, and the media team operated invisibly but caught every moment.",
-        category: "Private Gala",
-    },
-    {
-        id: 3,
-        name: "Elena Rodriguez",
-        location: "Sharjah, UAE",
-        text: "We've worked with many agencies, but this team's attention to detail and premium quality output stands unmatched in the region.",
-        category: "Brand Launch",
-    },
+const TESTIMONIALS = [
+  {
+    id: 1,
+    quote:
+      "RG Creatives delivered an exceptional live streaming experience for our conference. Professional, responsive and easy to work with!",
+    name: "Sarah Al-Fahim",
+    role: "Event Manager | Dubai",
+    initials: "SA",
+    color: "from-amber-400 to-amber-600",
+  },
+  {
+    id: 2,
+    quote:
+      "The 360 booth was a huge hit at our event! Great quality, friendly team and smooth setup.",
+    name: "James Carter",
+    role: "Marketing Director | UAE",
+    initials: "JC",
+    color: "from-blue-400 to-indigo-600",
+  },
+  {
+    id: 3,
+    quote:
+      "Highly recommend RG Creatives for corporate events. Their team is professional, creative and always on time.",
+    name: "Priya Nair",
+    role: "Event Planner | Dubai",
+    initials: "PN",
+    color: "from-emerald-400 to-teal-600",
+  },
 ];
 
 const container: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
 };
 
 const cardAnim: Variants = {
-    hidden: { opacity: 0, y: 28 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
 export function TestimonialsSection() {
-    const [isReviewOpen, setReviewOpen] = useState(false);
-    return (
-        <section
-            id="testimonials"
-            className="py-28 bg-black text-white border-t border-white/5 overflow-hidden"
+  const [isReviewOpen, setReviewOpen] = useState(false);
+
+  return (
+    <section id="testimonials" className="py-24 bg-black text-white relative border-t border-white/5">
+      <div className="container mx-auto px-6">
+        {/* Header matching reference mockup */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <p className="text-xs font-bold text-amber-400 tracking-[0.25em] uppercase mb-3">
+            CLIENT REVIEWS
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+            What Our Clients Say
+          </h2>
+        </div>
+
+        {/* 3 Review Cards Grid matching mockup */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
         >
-            <div className="container mx-auto px-6">
-                {/* Header */}
-                <motion.div
-                    className="text-center mb-20"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          {TESTIMONIALS.map((t) => (
+            <motion.div
+              key={t.id}
+              variants={cardAnim}
+              whileHover={{ y: -6 }}
+              className="p-8 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-amber-400/40 hover:bg-zinc-900/90 transition-all duration-300 flex flex-col justify-between shadow-lg"
+            >
+              <div>
+                {/* 5 Stars */}
+                <div className="flex gap-1 mb-5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-amber-400 text-amber-400"
+                    />
+                  ))}
+                </div>
+
+                {/* Quote Text */}
+                <p className="text-sm sm:text-base text-gray-200 leading-relaxed font-light mb-8">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+              </div>
+
+              {/* Author Info with Avatar */}
+              <div className="flex items-center gap-3.5 pt-4 border-t border-white/10">
+                <div
+                  className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-xs font-bold text-black shadow-md shrink-0`}
                 >
-                    <p className="text-xs font-semibold text-gray-500 tracking-[0.25em] uppercase mb-4">
-                        Client Feedback
-                    </p>
-                    <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-                        TRUSTED BY BRANDS.
-                    </h2>
-                </motion.div>
+                  {t.initials}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-white leading-tight">
+                    {t.name}
+                  </span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5">
+                    {t.role}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-                {/* Cards */}
-                <motion.div
-                    className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-5 pb-4 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible"
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, margin: "-60px" }}
-                >
-                    {testimonials.map((t) => (
-                        <motion.div
-                            key={t.id}
-                            variants={cardAnim}
-                            whileHover={{ y: -4 }}
-                            className="min-w-[85vw] md:min-w-0 snap-center bg-gray-900/70 border border-white/10 hover:border-white/20 rounded-[2rem] p-8 flex flex-col relative hover:shadow-[0_8px_40px_rgba(255,255,255,0.04)] transition-all duration-300 cursor-default"
-                        >
-                            {/* Big quote watermark */}
-                            <Quote className="absolute top-7 right-7 w-14 h-14 text-white/4" />
+        {/* Write a Review Button */}
+        <div className="flex justify-center mt-12">
+          <button
+            onClick={() => setReviewOpen(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 bg-zinc-900 hover:bg-zinc-800 text-xs sm:text-sm font-semibold text-white transition-all hover:scale-105 active:scale-95"
+          >
+            <PenLine className="w-4 h-4 text-amber-400" />
+            <span>Write a Review</span>
+          </button>
+        </div>
+      </div>
 
-                            {/* Stars */}
-                            <div className="flex gap-0.5 mb-6">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
-                                        key={i}
-                                        className="w-4 h-4 fill-white text-white"
-                                    />
-                                ))}
-                            </div>
-
-                            {/* Quote text */}
-                            <p className="text-gray-200 text-base leading-relaxed mb-8 flex-grow">
-                                &ldquo;{t.text}&rdquo;
-                            </p>
-
-                            {/* Divider */}
-                            <div className="border-t border-white/10 pt-6 flex items-center justify-between">
-                                <div>
-                                    <p className="font-semibold text-white text-sm">{t.name}</p>
-                                    <p className="text-xs text-gray-500 mt-0.5">{t.location}</p>
-                                </div>
-                                <span className="px-3 py-1 bg-white/5 border border-white/10 text-[10px] font-bold rounded-full uppercase tracking-[0.15em] text-gray-400">
-                                    {t.category}
-                                </span>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
-
-                {/* Write a Review trigger */}
-                <motion.div
-                    className="flex justify-center mt-14"
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-                >
-                    <motion.button
-                        id="write-review-btn"
-                        onClick={() => setReviewOpen(true)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 text-sm font-semibold text-white transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-white/20"
-                    >
-                        <PenLine className="w-4 h-4 text-sky-400 group-hover:rotate-[-6deg] transition-transform duration-200" />
-                        Write a Review
-                    </motion.button>
-                </motion.div>
-            </div>
-
-            {/* Review Modal — rendered at section level to stay within client tree */}
-            <ReviewModal isOpen={isReviewOpen} onClose={() => setReviewOpen(false)} />
-        </section>
-    );
+      <ReviewModal isOpen={isReviewOpen} onClose={() => setReviewOpen(false)} />
+    </section>
+  );
 }

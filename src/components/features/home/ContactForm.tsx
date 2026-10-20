@@ -217,28 +217,24 @@ export function ContactForm() {
               <motion.button
                 type="submit"
                 disabled={loading}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex-1 group inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] text-black bg-white rounded-full hover:bg-gray-100 hover:shadow-[0_0_24px_rgba(255,255,255,0.2)] transition-all duration-200 focus-ring disabled:opacity-70 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 group inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] text-black bg-amber-400 hover:bg-amber-300 rounded-full hover:shadow-[0_0_24px_rgba(251,191,36,0.35)] transition-all duration-200 focus-ring disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? "Sending..." : "Submit Request"}
                 {!loading && (
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 )}
               </motion.button>
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <a
+                href="https://wa.me/971559617957"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] text-white border border-white/20 bg-zinc-900/60 rounded-full hover:bg-zinc-800 hover:border-emerald-500 transition-all duration-200 focus-ring"
               >
-                <Link
-                  href="https://wa.me/971567571993"
-                  className="inline-flex items-center justify-center w-full gap-2 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] text-white border border-white/20 bg-transparent rounded-full hover:bg-white/5 hover:border-white/30 transition-all duration-200 focus-ring"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp Us
-                </Link>
-              </motion.button>
+                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                WhatsApp Us
+              </a>
             </div>
           </form>
         </motion.div>

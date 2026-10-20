@@ -1,310 +1,194 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, X } from "lucide-react";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 
-const projects = [
+type PortfolioItem = {
+  id: string;
+  title: string;
+  locationCategory: string;
+  image: string;
+  video?: string;
+  description: string;
+};
+
+const PORTFOLIO_ITEMS: PortfolioItem[] = [
   {
-    id: 1,
-    title: "Graduation Ceremony",
-    category: "Live Event Coverage",
+    id: "conference",
+    title: "Corporate Conference",
+    locationCategory: "Dubai | Live Streaming + Hybrid",
+    image: "/corporate_stage.jpg",
     description:
-      "Multi-camera streaming and dynamic highlight reel creation for the graduating class.",
-    image: "/grad_ceremony_.png",
-    tall: true,
+      "Full live multi-camera broadcast, audio engineering, and remote speaker Zoom/Teams integration for over 1,200 delegates at the Dubai Leadership Conference.",
   },
   {
-    id: 2,
-    title: "Royal Wedding",
-    category: "Cinematic Coverage",
+    id: "product-launch",
+    title: "Product Launch",
+    locationCategory: "Dubai | Multi-Camera + Video",
+    image: "/product_launch.jpg",
     description:
-      "Capturing the magic and elegance of a timeless union with cinematic precision.",
-    image:
-      "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop",
-    tall: false,
+      "High-energy live switching, cinematic recap videography, dynamic spotlight lighting, and real-time social media clip generation.",
   },
   {
-    id: 3,
-    title: "Global Summit",
-    category: "Corporate AV",
+    id: "wedding",
+    title: "Wedding",
+    locationCategory: "Dubai | Photography + Videography",
+    image: "/wedding_hall.jpg",
     description:
-      "Comprehensive audio-visual solutions and live broadcasting for international delegates.",
-    image:
-      "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=800&auto=format&fit=crop",
-    tall: false,
+      "Grand luxury wedding reception coverage featuring drone cinematography, multi-angle candid photography, and bespoke same-day edit film.",
   },
   {
-    id: 4,
-    title: "Gala Dinner",
-    category: "Corporate Event",
+    id: "360-booth",
+    title: "360 Booth",
+    locationCategory: "Dubai | 360° Video Experience",
+    image: "/booth_360.jpg",
+    video: "/360Booth_Showreel.mp4",
     description:
-      "Premium event coverage capturing keynote speakers, awards, and exclusive VIP moments.",
-    image:
-      "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=800&auto=format&fit=crop",
-    tall: true,
+      "Custom branded 360 video booth platform with automated slow-motion capture, instant AirDrop/QR sharing, and custom event graphic overlays.",
   },
   {
-    id: 5,
-    title: "Music Festival",
-    category: "Drone Coverage",
+    id: "dslr-booth",
+    title: "DSLR Photobooth",
+    locationCategory: "Dubai | Instant Prints",
+    image: "/dslr_photobooth.jpg",
     description:
-      "High-octane aerial footage and stage coverage capturing the energy of massive crowds.",
-    image:
-      "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=800&auto=format&fit=crop",
-    tall: false,
-  },
-  {
-    id: 6,
-    title: "Brand Launch",
-    category: "Event Photography",
-    description:
-      "Dynamic and polished photography capturing the excitement of a new product reveal.",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=800&auto=format&fit=crop",
-    tall: false,
+      "High-resolution DSLR photo kiosk with customized brand print templates, studio flash lighting, touchscreen UI, and instant photo strip printing.",
   },
 ];
 
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-
-const cardAnim: Variants = {
-  hidden: { opacity: 0, y: 24, scale: 0.98 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
 export function PortfolioSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isInteracting, setIsInteracting] = useState(false);
-
-  useEffect(() => {
-    if (isInteracting) return;
-
-    const interval = setInterval(() => {
-      if (scrollContainerRef.current) {
-        const scrollNode = scrollContainerRef.current;
-        const maxScroll = scrollNode.scrollWidth - scrollNode.clientWidth;
-
-        if (scrollNode.scrollLeft >= maxScroll - 10) {
-          scrollNode.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          const firstChild = scrollNode.children[0] as HTMLElement;
-          const cardWidth = firstChild
-            ? firstChild.offsetWidth + 16
-            : window.innerWidth * 0.85;
-          scrollNode.scrollBy({ left: cardWidth, behavior: "smooth" });
-        }
-      }
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [isInteracting]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const containerNode = e.currentTarget;
-    const maxScroll = containerNode.scrollWidth - containerNode.clientWidth;
-    if (maxScroll <= 0) return;
-
-    const scrollPercent = containerNode.scrollLeft / maxScroll;
-    const index = Math.round(scrollPercent * (projects.length - 1));
-    setActiveIndex(index);
-  };
+  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
   return (
-    <section id="portfolio" className="py-28 bg-black text-white">
+    <section id="portfolio" className="py-24 bg-black text-white relative border-t border-white/5">
       <div className="container mx-auto px-6">
-        <motion.div
-          className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
+        {/* Header matching reference mockup */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
           <div>
-            <p className="text-xs font-semibold text-gray-500 tracking-[0.25em] uppercase mb-4">
-              Selected Works
+            <p className="text-xs font-bold text-amber-400 tracking-[0.25em] uppercase mb-3">
+              OUR PORTFOLIO
             </p>
-            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-              OUR PORTFOLIO.
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+              Real Events. Lasting Memories.
             </h2>
           </div>
-        </motion.div>
 
-        {/* Desktop Grid */}
-        <motion.div
-          className="hidden md:flex flex-wrap gap-5"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          {projects.map((project) => (
-            <PortfolioCard
-              key={project.id}
-              project={project}
-              className={cn(
-                "grow h-[380px]",
-                project.tall
-                  ? "md:basis-[100%] lg:basis-[55%]"
-                  : "md:basis-[45%] lg:basis-[30%]",
-              )}
-            />
-          ))}
-        </motion.div>
-
-        {/* Mobile Layout — Changed snap-mandatory to snap-proximity */}
-        <div className="md:hidden -mx-6 px-6">
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            onTouchStart={() => setIsInteracting(true)}
-            onTouchEnd={() => {
-              setTimeout(() => setIsInteracting(false), 2000);
-            }}
-            className={cn(
-              "flex gap-4 overflow-x-auto scroll-smooth snap-x snap-proximity",
-              "hide-scrollbar pb-4",
-            )}
+          <a
+            href="#contact"
+            className="self-start sm:self-auto inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-white bg-zinc-900 border border-white/15 rounded-full hover:bg-zinc-800 hover:border-white/30 transition-all duration-200"
           >
-            {projects.map((project, index) => (
-              <div key={project.id} className="snap-center flex-none w-[85vw]">
-                <PortfolioCard project={project} isMobile mobileIndex={index} />
-              </div>
-            ))}
-            <div className="flex-none w-[7.5vw]" aria-hidden="true" />
-          </div>
-
-          <div className="flex justify-center items-center gap-2 mt-5">
-            {projects.map((p, idx) => (
-              <span
-                key={p.id}
-                className={cn(
-                  "block h-1.5 rounded-full transition-all duration-300 ease-in-out",
-                  activeIndex === idx ? "w-5 bg-white" : "w-1.5 bg-white/20",
-                )}
-              />
-            ))}
-          </div>
+            <span>View All Projects</span>
+          </a>
         </div>
-      </div>
-    </section>
-  );
-}
 
-function PortfolioCard({
-  project,
-  isMobile = false,
-  mobileIndex = 0,
-  className,
-}: {
-  project: (typeof projects)[number];
-  isMobile?: boolean;
-  mobileIndex?: number;
-  className?: string;
-}) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <motion.div
-      variants={isMobile ? undefined : cardAnim}
-      initial={isMobile ? { opacity: 0, y: 24, scale: 0.98 } : undefined}
-      whileInView={isMobile ? { opacity: 1, y: 0, scale: 1 } : undefined}
-      viewport={isMobile ? { once: true } : undefined}
-      transition={
-        isMobile
-          ? {
-              delay: mobileIndex * 0.08,
-              duration: 0.6,
-              ease: [0.22, 1, 0.36, 1],
-            }
-          : undefined
-      }
-      whileHover={!isMobile ? "hover" : undefined}
-      onClick={() => setIsExpanded(!isExpanded)}
-      className={cn(
-        "group relative w-full overflow-hidden rounded-4xl bg-gray-900 cursor-pointer transition-all duration-200",
-        // Swapped whileTap for CSS hardware accelerated active state to avoid scroll locking
-        isMobile
-          ? "h-[420px] active:scale-[1.02] active:shadow-[0_16px_56px_rgba(255,255,255,0.1)]"
-          : className,
-      )}
-    >
-      <Image
-        src={project.image}
-        alt={project.title}
-        fill
-        sizes={isMobile ? "85vw" : "(max-width: 1200px) 50vw, 50vw"}
-        className="object-cover transition-transform duration-700 lg:group-hover:scale-105"
-      />
-
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent transition-opacity duration-400",
-          isExpanded ? "opacity-90" : "opacity-60 lg:group-hover:opacity-90",
-        )}
-      />
-
-      <div className="absolute inset-0 p-7 flex flex-col justify-end">
-        <div
-          className={cn(
-            "transform transition-transform duration-350 ease-out",
-            isExpanded
-              ? "translate-y-0"
-              : "translate-y-4 lg:group-hover:translate-y-0",
-          )}
-        >
-          <span className="block text-[10px] font-bold tracking-[0.25em] text-white/60 uppercase mb-2">
-            {project.category}
-          </span>
-
-          <div className="flex items-end justify-between gap-3">
-            <h3 className="text-xl font-bold text-white leading-tight">
-              {project.title}
-            </h3>
-            <div
-              className={cn(
-                "shrink-0 p-2 bg-white rounded-full lg:hidden transition-transform duration-300",
-                isExpanded && "rotate-45",
-              )}
+        {/* 5 Cards Row matching reference mockup */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          {PORTFOLIO_ITEMS.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.08 }}
+              onClick={() => setSelectedItem(item)}
+              className="group cursor-pointer flex flex-col"
             >
-              <ArrowUpRight className="w-4 h-4 text-black" />
-            </div>
-          </div>
+              {/* Image Container with Play Badge */}
+              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-white/10 bg-zinc-900 mb-3.5 shadow-lg group-hover:border-amber-400/50 transition-all duration-300">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
 
-          <div
-            className={cn(
-              "grid transition-[grid-template-rows] duration-300 ease-out mt-1",
-              isExpanded
-                ? "grid-rows-[1fr]"
-                : "grid-rows-[0fr] lg:group-hover:grid-rows-[1fr]",
-            )}
-          >
-            <div className="overflow-hidden">
-              <p
-                className={cn(
-                  "text-sm text-gray-300 pt-3 transition-opacity duration-300 delay-100",
-                  isExpanded
-                    ? "opacity-100"
-                    : "opacity-0 lg:group-hover:opacity-100",
-                )}
-              >
-                {project.description}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                {/* Circular Play / Inspect Icon Badge */}
+                <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/70 border border-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:scale-110 group-hover:bg-amber-400 group-hover:text-black group-hover:border-amber-400 transition-all duration-200 shadow-md">
+                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                </div>
+              </div>
+
+              {/* Title & Category below thumbnail */}
+              <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-amber-400 transition-colors leading-tight">
+                {item.title}
+              </h3>
+              <p className="text-[11px] sm:text-xs text-gray-400 font-light mt-1">
+                {item.locationCategory}
               </p>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
       </div>
-    </motion.div>
+
+      {/* Lightbox / Video Preview Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-3xl rounded-3xl bg-zinc-950 border border-white/15 overflow-hidden shadow-2xl"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Media Container */}
+              <div className="relative aspect-video w-full bg-black">
+                {selectedItem.video ? (
+                  <video
+                    src={selectedItem.video}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <Image
+                    src={selectedItem.image}
+                    alt={selectedItem.title}
+                    fill
+                    className="object-cover"
+                  />
+                )}
+              </div>
+
+              {/* Information Drawer */}
+              <div className="p-6 sm:p-8">
+                <span className="text-xs font-semibold text-amber-400 tracking-wider uppercase">
+                  {selectedItem.locationCategory}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1 mb-2">
+                  {selectedItem.title}
+                </h3>
+                <p className="text-sm text-gray-300 leading-relaxed font-light">
+                  {selectedItem.description}
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <a
+                    href="#contact"
+                    onClick={() => setSelectedItem(null)}
+                    className="px-6 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs sm:text-sm transition-transform active:scale-95"
+                  >
+                    Request Similar Setup
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 }
