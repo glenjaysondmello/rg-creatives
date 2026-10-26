@@ -197,14 +197,14 @@ export function HeroSection({ onOpenQuote }: HeroSectionProps) {
         {/* Background image */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none" id="hero-desktop-img">
           <Image
-            src="/hero_conference.jpg"
+            src="/1-Hybrid Meeting/Hybrid 1.jpg"
             alt="Professional Event Production in Dubai & UAE - RG Creatives"
             fill
             priority
             quality={100}
             unoptimized
             sizes="100vw"
-            className="object-cover object-[64%_60%] lg:object-[45%_55%] xl:object-[40%_50%] filter brightness-[0.92] contrast-[1.07] saturate-[1.08]"
+            className="object-cover object-[50%_40%] filter brightness-[0.85] contrast-[1.07] saturate-[1.08]"
           />
 
           {/* Left-to-right cinematic gradient */}

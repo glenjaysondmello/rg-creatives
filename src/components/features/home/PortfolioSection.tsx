@@ -1,192 +1,229 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, X } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-type PortfolioItem = {
+interface BentoItem {
   id: string;
-  title: string;
-  locationCategory: string;
-  image: string;
-  video?: string;
-  description: string;
-};
+  src: string;
+  alt: string;
+  spanClass: string;
+}
 
-const PORTFOLIO_ITEMS: PortfolioItem[] = [
+const BENTO_IMAGES: BentoItem[] = [
+  // Row 1: Wide (7 cols) + Narrow (5 cols)
   {
-    id: "conference",
-    title: "Corporate Conference",
-    locationCategory: "Dubai | Live Streaming + Hybrid",
-    image: "/corporate_stage.jpg",
-    description:
-      "Full live multi-camera broadcast, audio engineering, and remote speaker Zoom/Teams integration for over 1,200 delegates at the Dubai Leadership Conference.",
+    id: "portfolio-1",
+    src: "/portfolio/hybrid_full_coverage.jpg",
+    alt: "Live event production and camera coverage",
+    spanClass: "col-span-12 sm:col-span-7",
   },
   {
-    id: "product-launch",
-    title: "Product Launch",
-    locationCategory: "Dubai | Multi-Camera + Video",
-    image: "/product_launch.jpg",
-    description:
-      "High-energy live switching, cinematic recap videography, dynamic spotlight lighting, and real-time social media clip generation.",
+    id: "portfolio-2",
+    src: "/portfolio/dslr_booth_chicco.jpg",
+    alt: "Interactive DSLR photo booth with live display and instant printing",
+    spanClass: "col-span-12 sm:col-span-5",
+  },
+
+  // Row 2: Narrow (5 cols) + Wide (7 cols)
+  {
+    id: "portfolio-3",
+    src: "/portfolio/grad_photography.jpg",
+    alt: "Graduation ceremony setup and event photography",
+    spanClass: "col-span-12 sm:col-span-5",
   },
   {
-    id: "wedding",
-    title: "Wedding",
-    locationCategory: "Dubai | Photography + Videography",
-    image: "/wedding_hall.jpg",
-    description:
-      "Grand luxury wedding reception coverage featuring drone cinematography, multi-angle candid photography, and bespoke same-day edit film.",
+    id: "portfolio-4",
+    src: "/portfolio/hybrid_conference.jpg",
+    alt: "Large scale conference and hybrid event production",
+    spanClass: "col-span-12 sm:col-span-7",
+  },
+
+  // Row 3: Wide (7 cols) + Narrow (5 cols)
+  {
+    id: "portfolio-5",
+    src: "/portfolio/corporate_gala.jpg",
+    alt: "Corporate gala and night stage production",
+    spanClass: "col-span-12 sm:col-span-7",
   },
   {
-    id: "360-booth",
-    title: "360 Booth",
-    locationCategory: "Dubai | 360° Video Experience",
-    image: "/booth_360.jpg",
-    video: "/360Booth_Showreel.mp4",
-    description:
-      "Custom branded 360 video booth platform with automated slow-motion capture, instant AirDrop/QR sharing, and custom event graphic overlays.",
+    id: "portfolio-6",
+    src: "/portfolio/live_streaming_stage.jpg",
+    alt: "Multi-camera live streaming and stage displays",
+    spanClass: "col-span-12 sm:col-span-5",
+  },
+
+  // Row 4: Narrow (5 cols) + Wide (7 cols)
+  {
+    id: "portfolio-7",
+    src: "/portfolio/dslr_booth_kabrita.jpg",
+    alt: "Brand activation photo booth with custom backdrop setup",
+    spanClass: "col-span-12 sm:col-span-5",
   },
   {
-    id: "dslr-booth",
-    title: "DSLR Photobooth",
-    locationCategory: "Dubai | Instant Prints",
-    image: "/dslr_photobooth.jpg",
-    description:
-      "High-resolution DSLR photo kiosk with customized brand print templates, studio flash lighting, touchscreen UI, and instant photo strip printing.",
+    id: "portfolio-8",
+    src: "/portfolio/broadcast_switching.jpg",
+    alt: "Live broadcast switching station",
+    spanClass: "col-span-12 sm:col-span-7",
+  },
+
+  // Row 5: Wide (7 cols) + Narrow (5 cols)
+  {
+    id: "portfolio-9",
+    src: "/portfolio/outdoor_conference.jpg",
+    alt: "Outdoor conference and keynote setup",
+    spanClass: "col-span-12 sm:col-span-7",
+  },
+  {
+    id: "portfolio-10",
+    src: "/portfolio/booth_360.jpg",
+    alt: "Interactive 360 photo booth experience",
+    spanClass: "col-span-12 sm:col-span-5",
   },
 ];
 
 export function PortfolioSection() {
-  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const handlePrev = useCallback(() => {
+    setSelectedIndex((prev) =>
+      prev !== null ? (prev === 0 ? BENTO_IMAGES.length - 1 : prev - 1) : null
+    );
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setSelectedIndex((prev) =>
+      prev !== null ? (prev === BENTO_IMAGES.length - 1 ? 0 : prev + 1) : null
+    );
+  }, []);
+
+  // Keyboard navigation & body scroll lock for lightbox
+  useEffect(() => {
+    if (selectedIndex === null) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedIndex(null);
+      if (e.key === "ArrowLeft") handlePrev();
+      if (e.key === "ArrowRight") handleNext();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedIndex, handlePrev, handleNext]);
 
   return (
-    <section id="portfolio" className="py-24 bg-black text-white relative border-t border-white/5">
-      <div className="container mx-auto px-6">
-        {/* Header matching reference mockup */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
-          <div>
-            <p className="text-xs font-bold text-amber-400 tracking-[0.25em] uppercase mb-3">
-              OUR PORTFOLIO
-            </p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
-              Real Events. Lasting Memories.
-            </h2>
-          </div>
+    <section
+      id="portfolio"
+      className="py-16 md:py-24 bg-black text-white relative border-t border-white/5 scroll-mt-20"
+      aria-label="Portfolio Gallery"
+    >
+      {/* Hidden heading for SEO and screen readers */}
+      <h2 className="sr-only">Our Event Production Portfolio</h2>
 
-          <a
-            href="#contact"
-            className="self-start sm:self-auto inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-white bg-zinc-900 border border-white/15 rounded-full hover:bg-zinc-800 hover:border-white/30 transition-all duration-200"
-          >
-            <span>View All Projects</span>
-          </a>
-        </div>
-
-        {/* 5 Cards Row matching reference mockup */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          {PORTFOLIO_ITEMS.map((item, index) => (
+      <div className="container mx-auto px-4 sm:px-6">
+        {/* Bento Grid */}
+        <div className="grid grid-cols-12 gap-4 sm:gap-6">
+          {BENTO_IMAGES.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-              onClick={() => setSelectedItem(item)}
-              className="group cursor-pointer flex flex-col"
+              viewport={{ once: true, margin: "100px" }}
+              transition={{ duration: 0.45, ease: "easeOut", delay: (index % 2) * 0.08 }}
+              onClick={() => setSelectedIndex(index)}
+              className={`group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-950 cursor-pointer h-[260px] sm:h-[340px] md:h-[400px] lg:h-[450px] shadow-xl hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.12)] transition-colors transition-shadow duration-300 isolate transform-gpu contain-paint ${item.spanClass}`}
             >
-              {/* Image Container with Play Badge */}
-              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-white/10 bg-zinc-900 mb-3.5 shadow-lg group-hover:border-amber-400/50 transition-all duration-300">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+              {/* Image */}
+              <Image
+                src={item.src}
+                alt={item.alt}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 60vw, 750px"
+                className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
+                priority={index < 2}
+                loading={index < 2 ? "eager" : "lazy"}
+                decoding="async"
+              />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-
-                {/* Circular Play / Inspect Icon Badge */}
-                <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/70 border border-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:scale-110 group-hover:bg-amber-400 group-hover:text-black group-hover:border-amber-400 transition-all duration-200 shadow-md">
-                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                </div>
-              </div>
-
-              {/* Title & Category below thumbnail */}
-              <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-amber-400 transition-colors leading-tight">
-                {item.title}
-              </h3>
-              <p className="text-[11px] sm:text-xs text-gray-400 font-light mt-1">
-                {item.locationCategory}
-              </p>
+              {/* Subtle Ambient Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none" />
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Lightbox / Video Preview Modal */}
+      {/* Pure Image Lightbox Modal */}
       <AnimatePresence>
-        {selectedItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-3xl rounded-3xl bg-zinc-950 border border-white/15 overflow-hidden shadow-2xl"
+        {selectedIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setSelectedIndex(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedIndex(null)}
+              aria-label="Close image preview"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 p-2.5 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white/80 hover:text-white border border-white/10 transition-colors duration-200 hover:scale-105"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedItem(null)}
-                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-              {/* Media Container */}
-              <div className="relative aspect-video w-full bg-black">
-                {selectedItem.video ? (
-                  <video
-                    src={selectedItem.video}
-                    controls
-                    autoPlay
-                    playsInline
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={selectedItem.image}
-                    alt={selectedItem.title}
-                    fill
-                    className="object-cover"
-                  />
-                )}
-              </div>
+            {/* Previous Arrow */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
+              }}
+              aria-label="Previous image"
+              className="absolute left-3 sm:left-6 z-20 p-2.5 sm:p-3 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white/80 hover:text-white border border-white/10 transition-colors duration-200 hover:scale-105"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-              {/* Information Drawer */}
-              <div className="p-6 sm:p-8">
-                <span className="text-xs font-semibold text-amber-400 tracking-wider uppercase">
-                  {selectedItem.locationCategory}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1 mb-2">
-                  {selectedItem.title}
-                </h3>
-                <p className="text-sm text-gray-300 leading-relaxed font-light">
-                  {selectedItem.description}
-                </p>
+            {/* Next Arrow */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              aria-label="Next image"
+              className="absolute right-3 sm:right-6 z-20 p-2.5 sm:p-3 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white/80 hover:text-white border border-white/10 transition-colors duration-200 hover:scale-105"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-                <div className="mt-6 flex justify-end gap-3">
-                  <a
-                    href="#contact"
-                    onClick={() => setSelectedItem(null)}
-                    className="px-6 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs sm:text-sm transition-transform active:scale-95"
-                  >
-                    Request Similar Setup
-                  </a>
-                </div>
-              </div>
+            {/* Lightbox Content Container */}
+            <motion.div
+              key={selectedIndex}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-6xl max-h-[88vh] aspect-[16/10] overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-zinc-950 isolate"
+            >
+              <Image
+                src={BENTO_IMAGES[selectedIndex].src}
+                alt={BENTO_IMAGES[selectedIndex].alt}
+                fill
+                sizes="(max-width: 1280px) 100vw, 1200px"
+                className="object-contain"
+                priority
+              />
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

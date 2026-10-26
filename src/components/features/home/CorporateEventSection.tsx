@@ -28,8 +28,8 @@ export function CorporateEventSection({ onOpenQuote }: CorporateEventSectionProp
           {/* Background image showing huge LED screen with INNOVATION BUILDS A BRIGHTER FUTURE */}
           <div className="absolute inset-0 z-0">
             <Image
-              src="/corporate_stage.jpg"
-              alt="Corporate Conference Hall in Dubai"
+              src="/3-Full Coverage/20260626_191444.jpg"
+              alt="Corporate Conference Production in Dubai"
               fill
               sizes="100vw"
               className="object-cover object-center filter brightness-[0.7]"

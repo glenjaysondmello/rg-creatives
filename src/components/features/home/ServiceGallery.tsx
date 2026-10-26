@@ -1,151 +1,155 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Radio,
-  Users2,
-  Video,
-  Camera,
-  Film,
-  RotateCw,
-  Printer,
-  ArrowUpRight,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { SERVICES, ServiceItem } from "./servicesData";
+import { ServiceDetailModal } from "./ServiceDetailModal";
 
-type ServiceItem = {
-  id: string;
-  title: string;
-  shortDesc: string;
-  fullDesc: string;
-  icon: React.ComponentType<{ className?: string }>;
-};
+export function ServiceGallery() {
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(
+    null,
+  );
 
-const SERVICES: ServiceItem[] = [
-  {
-    id: "live-streaming",
-    title: "Live Streaming",
-    shortDesc: "Multi-camera, professional audio, recording & backup internet.",
-    fullDesc:
-      "Multi-camera live streaming with professional audio, recording, and a backup internet plan where required.",
-    icon: Radio,
-  },
-  {
-    id: "hybrid-events",
-    title: "Hybrid Events",
-    shortDesc: "Zoom / Teams integration, remote speakers, presentations & mix-minus audio.",
-    fullDesc:
-      "Production support for in-person and remote speakers, presentations, and seamless Zoom, Teams, and meeting platform integration.",
-    icon: Users2,
-  },
-  {
-    id: "multi-cam",
-    title: "Multi-Camera Coverage",
-    shortDesc: "Professional camera operators, live switching & event recording.",
-    fullDesc:
-      "Professional camera operators, live switching, and complete event recording.",
-    icon: Video,
-  },
-  {
-    id: "photography",
-    title: "Event Photography",
-    shortDesc: "High-quality, candid & corporate photography.",
-    fullDesc:
-      "Premium coverage for weddings, private parties, corporate events, conferences, and special occasions, including candid, formal, and key-moment photography.",
-    icon: Camera,
-  },
-  {
-    id: "videography",
-    title: "Event Videography",
-    shortDesc: "Cinematic videos, highlights & aftermovies.",
-    fullDesc:
-      "Cinematic coverage of weddings, parties, corporate events, and special occasions with professional post-production editing.",
-    icon: Film,
-  },
-  {
-    id: "booth-360",
-    title: "360° Photo Booth",
-    shortDesc: "Immersive, branded experiences.",
-    fullDesc:
-      "A 360-degree video booth experience with branded content options, slow-motion effects, and instant digital sharing.",
-    icon: RotateCw,
-  },
-  {
-    id: "dslr-booth",
-    title: "DSLR Photobooth",
-    shortDesc: "Premium photo booth with instant prints.",
-    fullDesc:
-      "A DSLR photo booth with instant prints and custom-branded print layouts, subject to package and event requirements.",
-    icon: Printer,
-  },
-];
+  const handleOpenDetails = (service: ServiceItem) => {
+    setSelectedService(service);
+  };
 
-type ServiceGalleryProps = {
-  onSelectService?: (serviceName: string) => void;
-};
+  const handleCloseDetails = () => {
+    setSelectedService(null);
+  };
 
-export function ServiceGallery({ onSelectService }: ServiceGalleryProps) {
   return (
-    <section id="services" className="py-24 bg-black text-white relative border-t border-white/5">
+    <section
+      id="services"
+      className="py-24 bg-black text-white relative border-t border-white/5"
+    >
       <div className="container mx-auto px-6">
-        {/* Header matching reference mockup */}
+        {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <p className="text-xs font-bold text-amber-400 tracking-[0.25em] uppercase mb-3">
             OUR SERVICES
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
-            Complete Event Media Solutions
+            Complete Event Solutions
           </h2>
+          <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+            Professional media, broadcasting and interactive entertainment solutions for
+            conferences, corporate events, weddings, exhibitions and private celebrations across Dubai &amp; the UAE.
+          </p>
         </div>
 
-        {/* 7 Services Grid matching mockup reference */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
-          {SERVICES.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.05 }}
-                whileHover={{ y: -6 }}
-                onClick={() => {
-                  if (onSelectService) {
-                    onSelectService(service.title);
-                  } else {
-                    const el = document.getElementById("contact");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className="group relative flex flex-col items-center text-center p-5 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-amber-400/50 hover:bg-zinc-900/90 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(251,191,36,0.1)]"
-              >
-                {/* Minimal Circular Icon Badge */}
-                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-amber-400/10 group-hover:border-amber-400/40 transition-all duration-300">
-                  <Icon className="w-6 h-6 text-white group-hover:text-amber-400 transition-colors" />
-                </div>
+        {/* Top row — 3 cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
+          {SERVICES.slice(0, 3).map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              onOpenDetails={handleOpenDetails}
+            />
+          ))}
+        </div>
 
-                {/* Service Title */}
-                <h3 className="text-base font-bold text-white mb-2.5 leading-snug group-hover:text-amber-400 transition-colors">
-                  {service.title}
-                </h3>
-
-                {/* Short Description */}
-                <p className="text-xs text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
-                  {service.shortDesc}
-                </p>
-
-                {/* Subtle Hover Action Indicator */}
-                <div className="mt-4 pt-3 w-full border-t border-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[11px] font-semibold text-amber-400 inline-flex items-center gap-1">
-                    Book Service
-                    <ArrowUpRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
+        {/* Bottom row — 4 cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {SERVICES.slice(3).map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index + 3}
+              onOpenDetails={handleOpenDetails}
+            />
+          ))}
         </div>
       </div>
+
+      {/* Comprehensive Service Details Modal */}
+      <ServiceDetailModal
+        service={selectedService}
+        isOpen={Boolean(selectedService)}
+        onClose={handleCloseDetails}
+        onSelectService={(s) => setSelectedService(s)}
+        allServices={SERVICES}
+      />
     </section>
+  );
+}
+
+function ServiceCard({
+  service,
+  index,
+  onOpenDetails,
+}: {
+  service: ServiceItem;
+  index: number;
+  onOpenDetails: (s: ServiceItem) => void;
+}) {
+  const Icon = service.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.45, delay: index * 0.05 }}
+      whileHover={{ y: -6 }}
+      onClick={() => onOpenDetails(service)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpenDetails(service);
+        }
+      }}
+      aria-label={`View more details for ${service.title}`}
+      className="group relative flex flex-col rounded-2xl bg-zinc-950/90 border border-white/10 hover:border-amber-400/60 hover:bg-zinc-900/90 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_12px_36px_rgba(251,191,36,0.15)] overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+    >
+      {/* Image Thumbnail - Unobstructed view on hover */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-zinc-900">
+        <Image
+          src={service.image}
+          alt={service.imageAlt}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/25 to-transparent pointer-events-none" />
+
+        {/* Circular Service Icon Badge */}
+        <div className="absolute bottom-3 left-3 w-9 h-9 rounded-full bg-black/75 border border-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-amber-400 group-hover:border-amber-400 transition-all duration-300 shadow-md z-10">
+          <Icon className="w-4 h-4 text-white group-hover:text-black transition-colors" />
+        </div>
+      </div>
+
+      {/* Card Body */}
+      <div className="flex flex-col flex-1 p-4 sm:p-5">
+        <h3 className="text-base font-bold text-white mb-1.5 leading-snug group-hover:text-amber-400 transition-colors">
+          {service.title}
+        </h3>
+
+        <p className="text-xs text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors flex-1 line-clamp-3">
+          {service.shortDesc}
+        </p>
+
+        {/* Action Button: More Details */}
+        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDetails(service);
+            }}
+            className="text-xs font-semibold text-amber-400 group-hover:text-amber-300 inline-flex items-center gap-1.5 transition-all py-1 focus:outline-none"
+            aria-label={`More details about ${service.title}`}
+          >
+            <span>More Details</span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
   );
 }

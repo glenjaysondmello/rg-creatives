@@ -17,8 +17,8 @@ export function ImpactSection() {
                 {/* Left Column — Image */}
                 <div className="relative w-full min-h-[380px] lg:min-h-full">
                     <Image
-                        src="/impact-visual.jpg"
-                        alt="Cinematographer on set capturing premium visual content"
+                        src="/6-Photography/DSC08150.jpg"
+                        alt="Professional event photography by RG Creatives in Dubai"
                         fill
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         className="object-cover object-center"

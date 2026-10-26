@@ -29,7 +29,7 @@ export default function Home() {
       <HeroSection onOpenQuote={() => handleOpenQuote()} />
 
       {/* 2. Our Services: Complete Event Media Solutions (7 services) */}
-      <ServiceGallery onSelectService={(s) => handleOpenQuote(s)} />
+      <ServiceGallery />
 
       {/* 3. Corporate Event Production: Professional Support for Your Business Events */}
       <CorporateEventSection onOpenQuote={() => handleOpenQuote("Corporate Event Production")} />

@@ -85,13 +85,13 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#portfolio" className="hover:text-amber-400 transition-colors">
-                  Portfolio
+                <a href="#why-us" className="hover:text-amber-400 transition-colors">
+                  About Us
                 </a>
               </li>
               <li>
-                <a href="#why-us" className="hover:text-amber-400 transition-colors">
-                  About Us
+                <a href="#portfolio" className="hover:text-amber-400 transition-colors">
+                  Portfolio
                 </a>
               </li>
               <li>

@@ -10,8 +10,8 @@ const NAV_LINKS = [
   { href: "#home", label: "Home" },
   { href: "#services", label: "Services" },
   { href: "#corporate", label: "Corporate Events" },
-  { href: "#portfolio", label: "Portfolio" },
   { href: "#why-us", label: "About Us" },
+  { href: "#portfolio", label: "Portfolio" },
   { href: "#pricing", label: "Pricing" },
   { href: "#contact", label: "Contact" },
 ];
@@ -96,11 +96,10 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "py-3 bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
-          : "py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "py-3 bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
+        : "py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm"
+        }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
@@ -135,11 +134,10 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleScroll(e, link.href)}
-                className={`relative px-2 md:px-2.5 lg:px-3.5 py-1.5 text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-wide transition-all duration-200 rounded-full hover:text-white ${
-                  isActive
-                    ? "text-amber-400 bg-white/5"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
-                }`}
+                className={`relative px-2 md:px-2.5 lg:px-3.5 py-1.5 text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-wide transition-all duration-200 rounded-full hover:text-white ${isActive
+                  ? "text-amber-400 bg-white/5"
+                  : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
               >
                 {link.label}
                 {isActive && (
@@ -209,11 +207,10 @@ export function Header() {
                     <Link
                       href={link.href}
                       onClick={(e) => handleScroll(e, link.href)}
-                      className={`flex items-center py-3.5 px-2 text-base font-medium border-b border-white/5 last:border-none transition-colors ${
-                        isActive
-                          ? "text-amber-400 pl-4 border-l-2 border-l-amber-400 bg-white/5 rounded-r-lg"
-                          : "text-white/70 hover:text-white"
-                      }`}
+                      className={`flex items-center py-3.5 px-2 text-base font-medium border-b border-white/5 last:border-none transition-colors ${isActive
+                        ? "text-amber-400 pl-4 border-l-2 border-l-amber-400 bg-white/5 rounded-r-lg"
+                        : "text-white/70 hover:text-white"
+                        }`}
                     >
                       {link.label}
                     </Link>
