@@ -83,3 +83,48 @@ body {
     background-position: 200% center;
   }
 }
+
+/* Hero section text vertical positioning */
+.hero-content-padding {
+  padding-top: 6.5rem;
+}
+
+@media (min-width: 640px) {
+  .hero-content-padding {
+    padding-top: 8.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-content-padding {
+    padding-top: 10.5rem;
+  }
+}
+
+/* iPad Pro (1024px - 1050px portrait) and all tablet portrait screens */
+@media (min-width: 1024px) and (orientation: portrait), (min-width: 1024px) and (max-width: 1050px) {
+  .hero-content-padding {
+    padding-top: 11.5rem;
+  }
+}
+
+/* Desktop landscape: move text down beside laptop and around camera stand area */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .hero-content-padding {
+    padding-top: clamp(17rem, 36vh, 20.5rem);
+  }
+}
+
+@media (min-width: 1280px) and (orientation: landscape) {
+  .hero-content-padding {
+    padding-top: clamp(17.5rem, 38vh, 21.5rem);
+  }
+}
+
+@media (min-width: 1536px) and (orientation: landscape) {
+  .hero-content-padding {
+    padding-top: clamp(18.5rem, 40vh, 23rem);
+  }
+}
+
+

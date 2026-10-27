@@ -21,8 +21,8 @@ const STATS = [
   },
   {
     icon: MapPin,
-    value: "Dubai & UAE",
-    label: "Coverage",
+    value: "Based in Dubai",
+    label: "Available Across the UAE",
   },
 ];
 

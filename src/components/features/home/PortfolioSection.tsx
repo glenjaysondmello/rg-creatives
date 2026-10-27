@@ -121,10 +121,26 @@ export function PortfolioSection() {
       className="py-16 md:py-24 bg-black text-white relative border-t border-white/5 scroll-mt-20"
       aria-label="Portfolio Gallery"
     >
-      {/* Hidden heading for SEO and screen readers */}
-      <h2 className="sr-only">Our Event Production Portfolio</h2>
-
       <div className="container mx-auto px-4 sm:px-6">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-2xl mx-auto mb-12 md:mb-16"
+        >
+          <p className="text-xs font-bold text-amber-400 tracking-[0.25em] uppercase mb-3">
+            OUR WORK
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+            Our Portfolio
+          </h2>
+          <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+            A showcase of our live event productions, corporate summits, interactive photo booth experiences, and broadcast coverage — Based in Dubai, Available Across the UAE.
+          </p>
+        </motion.div>
+
         {/* Bento Grid */}
         <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
           {BENTO_IMAGES.map((item, index) => {

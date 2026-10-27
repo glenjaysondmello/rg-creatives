@@ -12,20 +12,20 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-16 border-b border-white/10">
           {/* Column 1: Logo & Bio */}
           <div className="lg:col-span-1 flex flex-col">
-            <Link href="#home" className="inline-block mb-4 group" aria-label="RG Creatives Home">
-              <div className="relative h-12 w-44 transition-transform duration-200 group-hover:scale-105">
+            <Link href="#home" className="inline-block mb-5 group" aria-label="RG Creatives Home">
+              <div className="relative h-16 sm:h-[68px] w-52 sm:w-60 transition-transform duration-200 group-hover:scale-105">
                 <Image
-                  src="/logo.png"
+                  src="/logo2.png"
                   alt="RG Creatives - Event Production & Media"
                   fill
                   className="object-contain object-left"
-                  sizes="176px"
+                  sizes="(max-width: 640px) 208px, 240px"
                 />
               </div>
             </Link>
 
             <p className="text-xs text-gray-400 leading-relaxed font-light mb-4">
-              High-end on-site production, multi-camera streaming, hybrid meeting support, and immersive photobooths across Dubai and the UAE.
+              High-end on-site production, multi-camera streaming, hybrid meeting support, and immersive photobooths — Based in Dubai, Available Across the UAE.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export function Footer() {
               </li>
               <li className="inline-flex items-center gap-2.5 text-gray-400">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>Dubai | UAE</span>
+                <span>Based in Dubai, Available Across the UAE</span>
               </li>
             </ul>
           </div>
@@ -168,7 +168,7 @@ export function Footer() {
               >
                 <Facebook className="w-4 h-4" />
               </a>
-              <a
+              {/* <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -185,7 +185,7 @@ export function Footer() {
                 className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-amber-400/50 hover:bg-white/10 transition-all"
               >
                 <Linkedin className="w-4 h-4" />
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ export function Footer() {
         {/* Bottom copyright row matching reference mockup */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
           <p>&copy; 2025 RG Creatives. All rights reserved.</p>
-          <p className="text-gray-400">Event Production &amp; Media Services in Dubai, UAE</p>
+          <p className="text-gray-400">Event Production &amp; Media Services — Based in Dubai, Available Across the UAE</p>
         </div>
       </div>
     </footer>

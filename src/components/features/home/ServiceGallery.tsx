@@ -36,7 +36,7 @@ export function ServiceGallery() {
           </h2>
           <p className="mt-3 text-sm text-gray-400 leading-relaxed">
             Professional media, broadcasting and interactive entertainment solutions for
-            conferences, corporate events, weddings, exhibitions and private celebrations across Dubai &amp; the UAE.
+            conferences, corporate events, weddings, exhibitions and private celebrations — Based in Dubai, Available Across the UAE.
           </p>
         </div>
 

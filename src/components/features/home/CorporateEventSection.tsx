@@ -58,7 +58,7 @@ export function CorporateEventSection({ onOpenQuote }: CorporateEventSectionProp
               </h2>
 
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-light mb-8 max-w-xl">
-                We provide end-to-end technical and media support for conferences, seminars, exhibitions, product launches and corporate functions in Dubai and across the UAE.
+                We provide end-to-end technical and media support for conferences, seminars, exhibitions, product launches and corporate functions — Based in Dubai, Available Across the UAE.
               </p>
 
               <button

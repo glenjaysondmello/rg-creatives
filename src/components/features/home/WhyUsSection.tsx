@@ -26,8 +26,8 @@ const WHY_US_ITEMS = [
   },
   {
     icon: MapPin,
-    title: "Dubai & UAE Coverage",
-    description: "Available for events across Dubai and the UAE.",
+    title: "Based in Dubai",
+    description: "Available for events across the UAE.",
   },
 ];
 

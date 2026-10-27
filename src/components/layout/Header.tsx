@@ -106,17 +106,17 @@ export function Header() {
         <Link
           href="#home"
           onClick={(e) => handleScroll(e, "#home")}
-          className="group flex items-center focus-ring rounded-lg py-1"
+          className="group flex items-center focus-ring rounded-lg py-0.5"
           aria-label="RG Creatives Home"
         >
-          <div className="relative h-11 w-32 md:w-36 lg:w-44 transition-transform duration-200 group-hover:scale-105">
+          <div className="relative h-12 md:h-[50px] lg:h-[54px] w-36 sm:w-40 md:w-44 lg:w-48 transition-transform duration-200 group-hover:scale-105">
             <Image
-              src="/logo.png"
+              src="/logo2.png"
               alt="RG Creatives FZE - Event Production & Media"
               fill
               priority
               className="object-contain object-left"
-              sizes="(max-width: 640px) 144px, 176px"
+              sizes="(max-width: 640px) 160px, (max-width: 1024px) 180px, 200px"
             />
           </div>
         </Link>
