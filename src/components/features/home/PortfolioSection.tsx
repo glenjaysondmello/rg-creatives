@@ -10,73 +10,49 @@ interface BentoItem {
   src: string;
   alt: string;
   spanClass: string;
-  isPortrait?: boolean;
 }
 
 const BENTO_IMAGES: BentoItem[] = [
-  // Row 1: Wide (7 cols) + Tall Portrait (5 cols, spans 2 rows)
+  // Row 1: Wide (7 cols) + Narrow (5 cols)
   {
     id: "portfolio-1",
-    src: "/portfolio/hybrid_full_coverage.jpg",
-    alt: "Live event production and camera coverage",
-    spanClass: "col-span-12 sm:col-span-7",
-  },
-  {
-    id: "portfolio-2",
-    src: "/portfolio/dslr_booth_chicco.jpg",
-    alt: "Interactive DSLR photo booth with live display and instant printing",
-    spanClass: "col-span-12 sm:col-span-5 sm:row-span-2",
-    isPortrait: true,
-  },
-
-  // Row 2: Wide (7 cols) - pairs with Row 2 of the portrait booth
-  {
-    id: "portfolio-3",
     src: "/portfolio/grad_photography.jpg",
     alt: "Graduation ceremony setup and event photography",
     spanClass: "col-span-12 sm:col-span-7",
   },
+  {
+    id: "portfolio-2",
+    src: "/portfolio/hybrid_full_coverage.jpg",
+    alt: "Live event production and camera coverage",
+    spanClass: "col-span-12 sm:col-span-5",
+  },
 
-  // Row 3: Wide (7 cols) + Narrow (5 cols)
+  // Row 2: Narrow (5 cols) + Wide (7 cols)
+  {
+    id: "portfolio-3",
+    src: "/portfolio/live_streaming_stage.jpg",
+    alt: "Multi-camera live streaming and stage displays",
+    spanClass: "col-span-12 sm:col-span-5",
+  },
   {
     id: "portfolio-4",
     src: "/portfolio/hybrid_conference.jpg",
     alt: "Large scale conference and hybrid event production",
     spanClass: "col-span-12 sm:col-span-7",
   },
+
+  // Row 3: Equal thirds
   {
     id: "portfolio-5",
-    src: "/portfolio/corporate_gala.jpg",
-    alt: "Corporate gala and night stage production",
-    spanClass: "col-span-12 sm:col-span-5",
-  },
-
-  // Row 4: Narrow (5 cols) + Wide (7 cols)
-  {
-    id: "portfolio-6",
-    src: "/portfolio/live_streaming_stage.jpg",
-    alt: "Multi-camera live streaming and stage displays",
-    spanClass: "col-span-12 sm:col-span-5",
-  },
-  {
-    id: "portfolio-7",
     src: "/portfolio/broadcast_switching.jpg",
     alt: "Live broadcast switching station",
-    spanClass: "col-span-12 sm:col-span-7",
-  },
-
-  // Row 5: Wide (7 cols) + Narrow (5 cols)
-  {
-    id: "portfolio-8",
-    src: "/portfolio/outdoor_conference.jpg",
-    alt: "Outdoor conference and keynote setup",
-    spanClass: "col-span-12 sm:col-span-7",
+    spanClass: "col-span-12 sm:col-span-6",
   },
   {
-    id: "portfolio-9",
+    id: "portfolio-6",
     src: "/portfolio/booth_360.jpg",
     alt: "Interactive 360 photo booth experience",
-    spanClass: "col-span-12 sm:col-span-5",
+    spanClass: "col-span-12 sm:col-span-6",
   },
 ];
 
@@ -144,10 +120,6 @@ export function PortfolioSection() {
         {/* Bento Grid */}
         <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
           {BENTO_IMAGES.map((item, index) => {
-            const heightClasses = item.isPortrait
-              ? "h-[500px] sm:h-full min-h-[500px] sm:min-h-full"
-              : "h-[260px] sm:h-[340px] md:h-[400px] lg:h-[450px]";
-
             return (
               <motion.div
                 key={item.id}
@@ -156,44 +128,18 @@ export function PortfolioSection() {
                 viewport={{ once: true, margin: "100px" }}
                 transition={{ duration: 0.45, ease: "easeOut", delay: (index % 2) * 0.08 }}
                 onClick={() => setSelectedIndex(index)}
-                className={`group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-950 cursor-pointer shadow-xl hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.12)] transition-colors transition-shadow duration-300 isolate transform-gpu contain-paint ${item.spanClass} ${heightClasses}`}
+                className={`group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-950 cursor-pointer shadow-xl hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.12)] transition-colors transition-shadow duration-300 isolate transform-gpu contain-paint h-[260px] sm:h-[340px] md:h-[400px] lg:h-[450px] ${item.spanClass}`}
               >
-                {item.isPortrait ? (
-                  <div className="relative w-full h-full flex items-center justify-center bg-zinc-950/80 p-2 sm:p-3 overflow-hidden">
-                    {/* Ambient subtle glow background */}
-                    <Image
-                      src={item.src}
-                      alt=""
-                      fill
-                      aria-hidden="true"
-                      className="object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
-                    />
-                    {/* Full uncropped image strictly preserving aspect ratio */}
-                    <div className="relative w-full h-full z-10">
-                      <Image
-                        src={item.src}
-                        alt={item.alt}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 550px"
-                        className="object-contain transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
-                        priority={index < 2}
-                        loading={index < 2 ? "eager" : "lazy"}
-                        decoding="async"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 60vw, 750px"
-                    className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
-                    priority={index < 2}
-                    loading={index < 2 ? "eager" : "lazy"}
-                    decoding="async"
-                  />
-                )}
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 60vw, 750px"
+                  className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
+                  priority={index < 2}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                />
 
                 {/* Subtle Ambient Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none z-20" />
@@ -255,11 +201,7 @@ export function PortfolioSection() {
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className={`relative w-full max-h-[88vh] overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-zinc-950 isolate ${
-                BENTO_IMAGES[selectedIndex].isPortrait
-                  ? "max-w-2xl h-[86vh] aspect-[9/16]"
-                  : "max-w-6xl aspect-[16/10]"
-              }`}
+              className="relative w-full max-h-[88vh] overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-zinc-950 isolate max-w-6xl aspect-[16/10]"
             >
               <Image
                 src={BENTO_IMAGES[selectedIndex].src}
