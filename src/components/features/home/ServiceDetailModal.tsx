@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -301,3 +301,4 @@ export function ServiceDetailModal({
     </AnimatePresence>
   );
 }
+

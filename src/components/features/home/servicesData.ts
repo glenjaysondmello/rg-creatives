@@ -1,4 +1,4 @@
-import {
+﻿import {
   Users2,
   Radio,
   Video,
@@ -389,7 +389,8 @@ export const SERVICES: ServiceItem[] = [
     closing:
       "Make Your Event Memorable. Contact RG Creatives to discuss your event requirements and customise a photo booth package to suit your occasion.",
     icon: RotateCw,
-    image: "/7-360 Booth & Dslr Photobooth/20260207_171701.jpg",
-    imageAlt: "360 degree and DSLR photo booth setup at an event",
+    image: "/DSLR.jpg",
+    imageAlt: "Professional DSLR photo booth with instant printing setup at a wedding event",
   },
 ];
+

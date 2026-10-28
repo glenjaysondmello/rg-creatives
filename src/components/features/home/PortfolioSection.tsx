@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
@@ -9,91 +9,130 @@ interface BentoItem {
   id: string;
   src: string;
   alt: string;
-  spanClass: string;
-  heightClass?: string;
-  isPortrait?: boolean;
+  title: string;
+  category: string;
+  width: number;
+  height: number;
 }
 
+// All 12 portfolio items with their exact pixel dimensions.
+// Arranged to ensure an even mix of portrait and landscape across columns,
+// balanced column heights (within 1.5% variance), and zero empty voids.
 const BENTO_IMAGES: BentoItem[] = [
-  // Row 1: Wide (7) + Narrow portrait (5)
+  // ── Column 1 group (desktop) ──
   {
-    id: "portfolio-1",
-    src: "/portfolio/grad_photography.jpg",
-    alt: "Graduation ceremony setup and event photography",
-    spanClass: "col-span-12 sm:col-span-7",
-  },
-  {
-    id: "portfolio-2",
-    src: "/portfolio/DSLR%20Booth.jpg",
-    alt: "DSLR photo booth with instant printing at a wedding reception",
-    spanClass: "col-span-12 sm:col-span-5",
-    isPortrait: true,
-  },
-
-  // Row 2: Three equal columns — portrait + landscape + landscape
-  {
-    id: "portfolio-3",
+    id: "portfolio-eri177",
     src: "/portfolio/ERI00177.jpg",
     alt: "Couple enjoying the 360 spinning photo booth at an outdoor night event",
-    spanClass: "col-span-12 sm:col-span-4",
-    isPortrait: true,
+    title: "360° Video Booth Experience",
+    category: "Interactive Photo Booth",
+    width: 4152,
+    height: 6328, // 2:3 portrait
   },
   {
-    id: "portfolio-4",
+    id: "portfolio-conference",
     src: "/portfolio/hybrid_conference.jpg",
     alt: "Large scale conference and hybrid event production",
-    spanClass: "col-span-12 sm:col-span-4",
+    title: "Hybrid Conference Summit",
+    category: "Hybrid Production",
+    width: 1600,
+    height: 900, // 16:9 landscape
   },
   {
-    id: "portfolio-5",
+    id: "portfolio-eri682",
+    src: "/portfolio/ERI00682.jpg",
+    alt: "Guests dancing and celebrating on the 360 photo booth",
+    title: "Celebration on 360 Video Booth",
+    category: "Interactive Experiences",
+    width: 4077,
+    height: 4525, // 9:10 near-square portrait
+  },
+  {
+    id: "portfolio-instruments",
+    src: "/portfolio/close-up-instruments-119213604.jpg",
+    alt: "Close-up of professional audio instruments at a live event",
+    title: "Live Sound & Audio Engineering",
+    category: "Audio Systems",
+    width: 800,
+    height: 534, // 3:2 landscape
+  },
+
+  // ── Column 2 group (desktop) ──
+  {
+    id: "portfolio-event",
+    src: "/portfolio/event.jpg",
+    alt: "Live event atmosphere with crowd and stage lighting",
+    title: "Live Stage & Audience Experience",
+    category: "Event Production",
+    width: 1200,
+    height: 800, // 3:2 landscape
+  },
+  {
+    id: "portfolio-dslr",
+    src: "/portfolio/DSLR%20Booth.jpg",
+    alt: "DSLR photo booth with instant printing at a wedding reception",
+    title: "DSLR Instant Photo Booth",
+    category: "Photo Booth Rental",
+    width: 768,
+    height: 1364, // 9:16 portrait
+  },
+  {
+    id: "portfolio-grad",
+    src: "/portfolio/grad_photography.jpg",
+    alt: "Graduation ceremony setup and event photography",
+    title: "Graduation Ceremony Staging",
+    category: "Event Photography",
+    width: 1600,
+    height: 1461, // 1.1:1 square-ish
+  },
+  {
+    id: "portfolio-live-stage",
     src: "/portfolio/live_streaming_stage.jpg",
     alt: "Multi-camera live streaming and stage displays",
-    spanClass: "col-span-12 sm:col-span-4",
+    title: "Multi-Camera Stage Broadcast",
+    category: "Live Streaming",
+    width: 1600,
+    height: 900, // 16:9 landscape
   },
 
-  // Row 3: Two landscape images side by side
+  // ── Column 3 group (desktop) ──
   {
-    id: "portfolio-6",
-    src: "/portfolio/broadcast_switching.jpg",
-    alt: "Live broadcast switching station",
-    spanClass: "col-span-12 sm:col-span-7",
+    id: "portfolio-booth360",
+    src: "/portfolio/booth_360.jpg",
+    alt: "Interactive 360 photo booth setup at an outdoor venue",
+    title: "Interactive 360 Kiosk",
+    category: "Photo & Video Booths",
+    width: 1200,
+    height: 1600, // 3:4 portrait
   },
   {
-    id: "portfolio-7",
+    id: "portfolio-hybrid-full",
     src: "/portfolio/hybrid_full_coverage.jpg",
     alt: "Live event production and full camera coverage",
-    spanClass: "col-span-12 sm:col-span-5",
-  },
-
-  // Row 4: Two booth images side by side — each at natural ratio
-  {
-    id: "portfolio-8",
-    src: "/portfolio/booth_360.jpg",
-    alt: "Interactive 360 photo booth experience",
-    spanClass: "col-span-12 sm:col-span-6",
-    isPortrait: true,
-    heightClass: "h-[360px] sm:h-[480px] md:h-[540px]",
+    title: "Full Multi-Angle Event Coverage",
+    category: "Full Video Coverage",
+    width: 1600,
+    height: 741, // 2.16:1 wide landscape
   },
   {
-    id: "portfolio-9",
-    src: "/portfolio/ERI00682.jpg",
-    alt: "360 photo booth platform with LED ring light setup at an outdoor venue",
-    spanClass: "col-span-12 sm:col-span-6",
-    isPortrait: true,
-    heightClass: "h-[360px] sm:h-[480px] md:h-[540px]",
-  },
-
-  // Row 5: Full-width portrait — cinematic closer
-  {
-    id: "portfolio-10",
+    id: "portfolio-image-360",
     src: "/portfolio/Image.png",
-    alt: "Group of guests posing and celebrating on the 360 photo booth",
-    spanClass: "col-span-12",
-    heightClass: "h-[420px] sm:h-[520px] md:h-[580px]",
-    isPortrait: true,
+    alt: "360 photo booth platform glowing with infinity LED lights at night",
+    title: "Infinity LED 360 Platform",
+    category: "Specialty Experiences",
+    width: 1024,
+    height: 1536, // 2:3 portrait
+  },
+  {
+    id: "portfolio-switching",
+    src: "/portfolio/broadcast_switching.jpg",
+    alt: "Live broadcast switching station with technical control surface",
+    title: "Live Video Switching Station",
+    category: "Broadcast Control",
+    width: 1600,
+    height: 900, // 16:9 landscape
   },
 ];
-
 
 export function PortfolioSection() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -147,65 +186,57 @@ export function PortfolioSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-12 gap-4 sm:gap-6 items-stretch">
-          {BENTO_IMAGES.map((item, index) => {
-            const defaultHeight = "h-[280px] sm:h-[360px] md:h-[420px] lg:h-[460px]";
-            const heightCls = item.heightClass ?? defaultHeight;
-            return (
+        {/* Responsive Bento Masonry layout:
+            - columns-1 on mobile
+            - columns-2 on tablet
+            - columns-3 on desktop
+            Eliminates all row-height gaps between image containers while giving
+            every image its exact, true aspect ratio with 0% cropping. */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-5 [column-fill:_balance]">
+          {BENTO_IMAGES.map((item, index) => (
+            <div
+              key={item.id}
+              className="break-inside-avoid inline-block w-full mb-4 md:mb-5"
+            >
               <motion.div
-                key={item.id}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "100px" }}
-                transition={{ duration: 0.45, ease: "easeOut", delay: (index % 2) * 0.08 }}
+                viewport={{ once: true, margin: "60px" }}
+                transition={{ duration: 0.45, ease: "easeOut", delay: (index % 3) * 0.06 }}
                 onClick={() => setSelectedIndex(index)}
-                className={`group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-950 cursor-pointer shadow-xl hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.12)] transition-colors transition-shadow duration-300 isolate transform-gpu ${heightCls} ${item.spanClass}`}
+                style={{ aspectRatio: `${item.width} / ${item.height}` }}
+                className="group relative w-full overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-900 cursor-pointer shadow-lg hover:border-amber-400/40 hover:shadow-[0_0_28px_rgba(251,191,36,0.14)] transition-all duration-300 isolate transform-gpu"
               >
-                {item.isPortrait ? (
-                  <>
-                    <Image
-                      src={item.src}
-                      alt=""
-                      fill
-                      aria-hidden="true"
-                      sizes="(max-width: 640px) 100vw, 600px"
-                      className="object-cover blur-2xl opacity-30 scale-110 pointer-events-none"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-zinc-950/50 pointer-events-none z-[1]" />
-                    <div className="relative w-full h-full z-[2]">
-                      <Image
-                        src={item.src}
-                        alt={item.alt}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-                        className="object-contain transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03]"
-                        priority={index < 2}
-                        loading={index < 2 ? "eager" : "lazy"}
-                        decoding="async"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 60vw, 800px"
-                    className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
-                    priority={index < 2}
-                    loading={index < 2 ? "eager" : "lazy"}
-                    decoding="async"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none z-30" />
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
+                  priority={index < 3}
+                  loading={index < 3 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+
+                {/* Ambient vignette + hover detail badge */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 flex flex-col justify-end p-4 sm:p-5">
+                  <span className="text-[10px] sm:text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">
+                    {item.category}
+                  </span>
+                  <h3 className="text-sm sm:text-base font-bold text-white leading-snug drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                </div>
+
+                {/* Subtle base gradient for subtle depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none z-[5]" />
               </motion.div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* High-Resolution Modal Lightbox */}
       <AnimatePresence>
         {selectedIndex !== null && (
           <motion.div
@@ -214,7 +245,7 @@ export function PortfolioSection() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setSelectedIndex(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 md:p-10 bg-black/92 backdrop-blur-md"
           >
             <button
               onClick={() => setSelectedIndex(null)}
@@ -237,27 +268,44 @@ export function PortfolioSection() {
             >
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
+
             <motion.div
               key={selectedIndex}
-              initial={{ opacity: 0, scale: 0.97 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
+              exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className={`relative w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-zinc-950 isolate ${
-                BENTO_IMAGES[selectedIndex].isPortrait
-                  ? "max-w-lg max-h-[88vh] aspect-[3/4]"
-                  : "max-w-6xl max-h-[88vh] aspect-[16/10]"
-              }`}
+              className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl bg-zinc-950 flex flex-col items-center justify-center"
             >
-              <Image
-                src={BENTO_IMAGES[selectedIndex].src}
-                alt={BENTO_IMAGES[selectedIndex].alt}
-                fill
-                sizes="(max-width: 1280px) 100vw, 1200px"
-                className="object-contain"
-                priority
-              />
+              <div
+                className="relative max-w-full max-h-[80vh] flex items-center justify-center p-2 sm:p-4"
+                style={{
+                  aspectRatio: `${BENTO_IMAGES[selectedIndex].width} / ${BENTO_IMAGES[selectedIndex].height}`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={BENTO_IMAGES[selectedIndex].src}
+                  alt={BENTO_IMAGES[selectedIndex].alt}
+                  className="w-auto h-auto max-h-[76vh] max-w-full object-contain rounded-xl"
+                  style={{ display: "block" }}
+                />
+              </div>
+
+              <div className="w-full bg-zinc-950/95 border-t border-white/10 px-4 sm:px-6 py-3 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] sm:text-xs text-amber-400 font-semibold uppercase tracking-wider">
+                    {BENTO_IMAGES[selectedIndex].category}
+                  </p>
+                  <p className="text-xs sm:text-sm text-white font-medium">
+                    {BENTO_IMAGES[selectedIndex].title}
+                  </p>
+                </div>
+                <p className="text-[11px] text-gray-400 font-mono">
+                  {selectedIndex + 1} / {BENTO_IMAGES.length}
+                </p>
+              </div>
             </motion.div>
           </motion.div>
         )}
