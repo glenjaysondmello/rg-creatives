@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -25,7 +25,7 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "RG Creatives | Professional Event Production & Media Services in Dubai",
   description:
-    "Live Streaming • Hybrid Events • Multi-Camera Production • Photography • Videography • 360° & DSLR Photobooths across Dubai and the UAE.",
+    "Live Streaming â€¢ Hybrid Events â€¢ Multi-Camera Production â€¢ Photography â€¢ Videography â€¢ 360Â° & DSLR Photobooths across Dubai and the UAE.",
   icons: {
     icon: [
       {
@@ -80,3 +80,4 @@ export default function RootLayout({
     </html>
   );
 }
+
