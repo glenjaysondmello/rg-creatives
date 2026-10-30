@@ -8,21 +8,23 @@ export function FaviconSwitcher() {
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    const updateFavicon = () => {
-      const isDark = mediaQuery.matches;
-      const targetIcon = isDark ? "/favicon-dark.png" : "/favicon-light.png";
+    const getTargetIcon = () =>
+      mediaQuery.matches ? "/logo2.png" : "/RG_Creatives_Black.png";
 
-      // Also update any unconditional icon links
-      const allIcons = document.querySelectorAll<HTMLLinkElement>(
-        'link[rel="icon"], link[rel="shortcut icon"]'
-      );
-      allIcons.forEach((l) => {
-        if (!l.media) {
-          l.href = targetIcon;
-        }
-      });
+    const applyFavicon = () => {
+      const targetIcon = getTargetIcon();
+      const absoluteTarget = new URL(targetIcon, location.href).href;
 
-      // Find or create dynamic favicon link
+      // Remove every icon link that isn't our controlled dynamic one
+      document
+        .querySelectorAll<HTMLLinkElement>(
+          'link[rel="icon"], link[rel="shortcut icon"]'
+        )
+        .forEach((l) => {
+          if (!l.dataset.dynamicFavicon) l.remove();
+        });
+
+      // Find or create the single dynamic favicon link
       let dynamicLink = document.querySelector<HTMLLinkElement>(
         'link[data-dynamic-favicon="true"]'
       );
@@ -35,18 +37,47 @@ export function FaviconSwitcher() {
         document.head.appendChild(dynamicLink);
       }
 
-      dynamicLink.href = targetIcon;
+      // Only update href if it actually changed (avoids unnecessary repaints)
+      if (dynamicLink.href !== absoluteTarget) {
+        dynamicLink.href = targetIcon;
+      }
     };
 
-    updateFavicon();
+    // Watch <head> for any icon links Next.js re-injects after navigation / hydration
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (
+            node instanceof HTMLLinkElement &&
+            (node.rel === "icon" || node.rel === "shortcut icon") &&
+            !node.dataset.dynamicFavicon
+          ) {
+            // Next.js snuck in a favicon link — take control immediately
+            applyFavicon();
+            return;
+          }
+        }
+      }
+    });
+
+    observer.observe(document.head, { childList: true });
+
+    // Run once immediately on mount
+    applyFavicon();
 
     try {
-      mediaQuery.addEventListener("change", updateFavicon);
-      return () => mediaQuery.removeEventListener("change", updateFavicon);
+      mediaQuery.addEventListener("change", applyFavicon);
+      return () => {
+        mediaQuery.removeEventListener("change", applyFavicon);
+        observer.disconnect();
+      };
     } catch {
-      // Compatibility fallback for older browsers
-      mediaQuery.addListener(updateFavicon);
-      return () => mediaQuery.removeListener(updateFavicon);
+      // Older browser fallback
+      mediaQuery.addListener(applyFavicon);
+      return () => {
+        mediaQuery.removeListener(applyFavicon);
+        observer.disconnect();
+      };
     }
   }, []);
 

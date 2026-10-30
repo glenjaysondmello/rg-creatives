@@ -1,4 +1,4 @@
-﻿
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
@@ -26,40 +26,11 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "RG Creatives | Professional Event Production & Media Services in Dubai",
   description:
-    "Live Streaming â€¢ Hybrid Events â€¢ Multi-Camera Production â€¢ Photography â€¢ Videography â€¢ 360Â° & DSLR Photobooths across Dubai and the UAE.",
+    "Live Streaming • Hybrid Events • Multi-Camera Production • Photography • Videography • 360° & DSLR Photobooths across Dubai and the UAE.",
+  // Single default favicon — FaviconSwitcher.tsx handles light/dark switching
+  // via JS + MutationObserver so Next.js cannot re-inject conflicting links.
   icons: {
-    icon: [
-      {
-        url: "/favicon-light.png",
-        media: "(prefers-color-scheme: light)",
-        type: "image/png",
-      },
-      {
-        url: "/favicon-dark.png",
-        media: "(prefers-color-scheme: dark)",
-        type: "image/png",
-      },
-    ],
-    shortcut: [
-      {
-        url: "/favicon-light.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/favicon-dark.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-    ],
-    apple: [
-      {
-        url: "/favicon-light.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/favicon-dark.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-    ],
+    icon: "/logo2.png",
   },
 };
 
