@@ -1,4 +1,5 @@
-﻿import type { Metadata } from "next";
+﻿
+import type { Metadata } from "next";
 import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -80,4 +81,3 @@ export default function RootLayout({
     </html>
   );
 }
-

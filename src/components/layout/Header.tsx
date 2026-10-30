@@ -20,6 +20,27 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Detect and track browser light/dark mode preference
+  useEffect(() => {
+    setMounted(true);
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkTheme(mq.matches);
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsDarkTheme(e.matches);
+    };
+
+    try {
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } catch {
+      mq.addListener(handler);
+      return () => mq.removeListener(handler);
+    }
+  }, []);
 
   // Track scroll for header background + home active state
   useEffect(() => {
@@ -94,15 +115,22 @@ export function Header() {
     }
   };
 
+  const isLight = mounted && !isDarkTheme;
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? "py-3 bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
-        : "py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isLight
+          ? scrolled
+            ? "py-3 bg-white/95 backdrop-blur-xl border-b border-zinc-200/90 shadow-[0_4px_25px_rgba(0,0,0,0.06)] text-black"
+            : "py-4 bg-gradient-to-b from-white/95 via-white/80 to-transparent backdrop-blur-sm text-black"
+          : scrolled
+            ? "py-3 bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)] text-white"
+            : "py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm text-white"
+      }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo — adapts automatically to browser light/dark mode */}
         <Link
           href="#home"
           onClick={(e) => handleScroll(e, "#home")}
@@ -110,12 +138,23 @@ export function Header() {
           aria-label="RG Creatives Home"
         >
           <div className="relative h-12 md:h-[50px] lg:h-[54px] w-36 sm:w-40 md:w-44 lg:w-48 transition-transform duration-200 group-hover:scale-105">
+            {/* Dark-mode logo: white text — visible on dark backgrounds */}
             <Image
               src="/logo2.png"
               alt="RG Creatives FZE - Event Production & Media"
               fill
               priority
-              className="object-contain object-left"
+              className={`object-contain object-left transition-opacity duration-300 ${isLight ? "opacity-0" : "opacity-100"}`}
+              sizes="(max-width: 640px) 160px, (max-width: 1024px) 180px, 200px"
+              style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.7))" }}
+            />
+            {/* Light-mode logo: black text — visible on light backgrounds */}
+            <Image
+              src="/RG_Creatives_Black.png"
+              alt="RG Creatives FZE - Event Production & Media"
+              fill
+              priority
+              className={`object-contain object-left transition-opacity duration-300 ${isLight ? "opacity-100" : "opacity-0"}`}
               sizes="(max-width: 640px) 160px, (max-width: 1024px) 180px, 200px"
             />
           </div>
@@ -134,14 +173,23 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleScroll(e, link.href)}
-                className={`relative px-2 md:px-2.5 lg:px-3.5 py-1.5 text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-wide transition-all duration-200 rounded-full hover:text-white ${isActive
-                  ? "text-amber-400 bg-white/5"
-                  : "text-gray-300 hover:text-white hover:bg-white/5"
-                  }`}
+                className={`relative px-2 md:px-2.5 lg:px-3.5 py-1.5 text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-wide transition-all duration-200 rounded-full ${
+                  isActive
+                    ? isLight
+                      ? "text-amber-600 bg-black/5 font-semibold"
+                      : "text-amber-400 bg-white/5"
+                    : isLight
+                      ? "text-zinc-700 hover:text-black hover:bg-black/5"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                }`}
               >
                 {link.label}
                 {isActive && (
-                  <span className="absolute bottom-0.5 left-3.5 right-3.5 h-[2px] bg-amber-400 rounded-full" />
+                  <span
+                    className={`absolute bottom-0.5 left-3.5 right-3.5 h-[2px] rounded-full ${
+                      isLight ? "bg-amber-600" : "bg-amber-400"
+                    }`}
+                  />
                 )}
               </Link>
             );
@@ -154,7 +202,11 @@ export function Header() {
             href="https://wa.me/971559617957"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden lg:inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-zinc-900/90 hover:bg-zinc-800 border border-emerald-500/40 hover:border-emerald-500 rounded-full transition-all duration-200 hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.15)] group"
+            className={`hidden lg:inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full transition-all duration-200 hover:scale-105 group ${
+              isLight
+                ? "text-zinc-900 bg-zinc-100 hover:bg-zinc-200 border border-emerald-600/40 shadow-sm"
+                : "text-white bg-zinc-900/90 hover:bg-zinc-800 border border-emerald-500/40 hover:border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
+            }`}
           >
             <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
               <svg
@@ -171,7 +223,11 @@ export function Header() {
           {/* Mobile hamburger — only shown below md breakpoint */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors focus-ring"
+            className={`md:hidden p-2 rounded-lg transition-colors focus-ring ${
+              isLight
+                ? "text-zinc-800 hover:text-black hover:bg-black/5"
+                : "text-white/80 hover:text-white hover:bg-white/10"
+            }`}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
           >
@@ -188,7 +244,11 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="overflow-hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
+            className={`overflow-hidden backdrop-blur-xl border-t ${
+              isLight
+                ? "bg-white/98 border-zinc-200 text-zinc-900"
+                : "bg-black/95 border-white/10 text-white"
+            }`}
           >
             <nav
               className="flex flex-col px-6 py-4 gap-1"
@@ -207,10 +267,15 @@ export function Header() {
                     <Link
                       href={link.href}
                       onClick={(e) => handleScroll(e, link.href)}
-                      className={`flex items-center py-3.5 px-2 text-base font-medium border-b border-white/5 last:border-none transition-colors ${isActive
-                        ? "text-amber-400 pl-4 border-l-2 border-l-amber-400 bg-white/5 rounded-r-lg"
-                        : "text-white/70 hover:text-white"
-                        }`}
+                      className={`flex items-center py-3.5 px-2 text-base font-medium border-b last:border-none transition-colors ${
+                        isLight
+                          ? isActive
+                            ? "text-amber-600 pl-4 border-l-2 border-l-amber-600 bg-black/5 rounded-r-lg border-zinc-100"
+                            : "text-zinc-700 hover:text-black border-zinc-100"
+                          : isActive
+                            ? "text-amber-400 pl-4 border-l-2 border-l-amber-400 bg-white/5 rounded-r-lg border-white/5"
+                            : "text-white/70 hover:text-white border-white/5"
+                      }`}
                     >
                       {link.label}
                     </Link>
