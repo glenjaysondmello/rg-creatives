@@ -27,10 +27,11 @@ export const metadata: Metadata = {
   title: "RG Creatives | Professional Event Production & Media Services in Dubai",
   description:
     "Live Streaming • Hybrid Events • Multi-Camera Production • Photography • Videography • 360° & DSLR Photobooths across Dubai and the UAE.",
-  // Single default favicon — FaviconSwitcher.tsx handles light/dark switching
-  // via JS + MutationObserver so Next.js cannot re-inject conflicting links.
+  // Default static favicon for search engines (Google), crawlers, and light environments
   icons: {
-    icon: "/logo2.png",
+    icon: "/RG_Creatives_Black.png",
+    shortcut: "/RG_Creatives_Black.png",
+    apple: "/RG_Creatives_Black.png",
   },
 };
 
