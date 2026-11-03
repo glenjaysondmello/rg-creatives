@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
@@ -24,14 +23,32 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.rgcreatives.live"),
   title: "RG Creatives | Professional Event Production & Media Services in Dubai",
   description:
     "Live Streaming • Hybrid Events • Multi-Camera Production • Photography • Videography • 360° & DSLR Photobooths across Dubai and the UAE.",
-  // Default static favicon for search engines (Google), crawlers, and light environments
   icons: {
-    icon: "/RG_Creatives_Black.png",
-    shortcut: "/RG_Creatives_Black.png",
-    apple: "/RG_Creatives_Black.png",
+    icon: [
+      { url: "/rg-logo-black.png", type: "image/png", sizes: "1000x1000" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "RG Creatives",
+  url: "https://www.rgcreatives.live",
+  logo: "https://www.rgcreatives.live/rg-logo-black.png",
+  description:
+    "Live Streaming • Hybrid Events • Multi-Camera Production • Photography • Videography • 360° & DSLR Photobooths across Dubai and the UAE.",
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+971559617957",
+    contactType: "customer service",
   },
 };
 
@@ -42,6 +59,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} antialiased bg-black text-white selection:bg-amber-400 selection:text-black`}
       >

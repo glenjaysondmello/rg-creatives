@@ -9,7 +9,7 @@ export function FaviconSwitcher() {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const getTargetIcon = () =>
-      mediaQuery.matches ? "/logo2.png" : "/RG_Creatives_Black.png";
+      mediaQuery.matches ? "/logo2.png" : "/rg-logo-black.png";
 
     const applyFavicon = () => {
       const targetIcon = getTargetIcon();
